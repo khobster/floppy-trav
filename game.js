@@ -4,11 +4,11 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 2;
+let gravity = 5;
 let flapPower = 100;
 let score = 0;
-let pipeGap = 400; // Gap between pipes
-let pipeSpeed = 1; // Speed of pipes moving
+let pipeGap = 250; // Gap between pipes
+let pipeSpeed = 9; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
 // Images (omitted for brevity, replace with your image paths)
