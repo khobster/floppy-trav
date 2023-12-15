@@ -6,7 +6,8 @@ let birdX = 50;
 let birdY = 100;
 let gravity = 5;
 let gravityConstant = 1; // Added gravity constant
-let flapPower = 100;
+let flapPower = 150; // Increased flap power
+let flapDecay = 0.95; // Flap power decay factor
 let score = 0;
 let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
@@ -34,11 +35,14 @@ function Pipe(x) {
 // Flap function
 function flap() {
   birdY -= flapPower;
-  flapPower = 100; // Reset flap power after each flap
+  flapPower *= flapDecay; // Apply decay to flap power
 }
 
 // Update gravity
 function updateGravity() {
+  if (flapPower < 100) {
+    flapPower = 100; // Reset flap power if it gets too low
+  }
   birdY += gravity * gravityConstant;
   gravityConstant += 0.001; // Increase gravity pull slightly each frame
 }
