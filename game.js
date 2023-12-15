@@ -1,80 +1,43 @@
-// Constants
-const TRAVIS_WIDTH = 64; // Width of one frame of Travis sprite
-const TRAVIS_HEIGHT = 64; // Height of Travis sprite
-const SWIFTIES_WIDTH = 100; // Width of Swiftie obstacle
-const SWIFTIES_HEIGHT = 100; // Height of Swiftie obstacle
-const GRAVITY = 0.5; // Gravity effect on Travis
-let move_speed = 3; // Background and obstacle movement speed
+// Game constants and variables
+const GRAVITY = 0.5;
+let gameRunning = false;
+let score = 0;
 
-// Getting references
-let travis = document.querySelector('.travis');
-let background = document.querySelector('.background');
-let score_val = document.querySelector('.score_val');
-let message = document.querySelector('.message');
-let score_title = document.querySelector('.score_title');
+// Game initialization
+function initGame() {
+    document.addEventListener('keydown', handleKeyPress);
+    window.requestAnimationFrame(gameLoop);
+}
 
-// Game state
-let game_state = 'Start';
-let travis_dy = 0; // Vertical speed of Travis
+// Main game loop
+function gameLoop() {
+    if (gameRunning) {
+        // Update game state
+        // TODO: Update Travis's position based on gravity
+        // TODO: Move Swiftie obstacles
+        // TODO: Check for collisions
+        // TODO: Update score
+    }
+    // Continue the loop
+    window.requestAnimationFrame(gameLoop);
+}
 
-// Start the game
-document.addEventListener('keydown', (e) => {
-    if (e.key == 'Enter' && game_state != 'Play') {
+// Handle key press
+function handleKeyPress(e) {
+    if (e.code === 'Space') {
+        // TODO: Make Travis "flap" and go up
+    } else if (e.code === 'Enter' && !gameRunning) {
         startGame();
     }
-});
+}
 
+// Start the game
 function startGame() {
-    // Reset game setup
-    // ...
-    game_state = 'Play';
-    play();
+    gameRunning = true;
+    score = 0;
+    // TODO: Reset Travis's position
+    // TODO: Spawn Swiftie obstacles
 }
 
-function play() {
-    applyGravity();
-    moveBackground();
-    createSwiftieObstacles();
-    // Other game logic...
-}
+initGame();
 
-function applyGravity() {
-    if (game_state != 'Play') return;
-
-    // Apply gravity to Travis
-    travis_dy += GRAVITY;
-    // Listen for input to move Travis up
-    document.addEventListener('keydown', (e) => {
-        if (e.key == 'ArrowUp' || e.key == ' ') {
-            travis_dy = -7.6; // Move Travis up
-        }
-    });
-
-    // Update Travis's position
-    // ...
-
-    requestAnimationFrame(applyGravity);
-}
-
-function moveBackground() {
-    if (game_state != 'Play') return;
-
-    // Logic to move the background continuously
-    // ...
-
-    requestAnimationFrame(moveBackground);
-}
-
-function createSwiftieObstacles() {
-    if (game_state != 'Play') return;
-
-    // Logic to create and move Swiftie obstacles
-    // ...
-
-    requestAnimationFrame(createSwiftieObstacles);
-}
-
-// Add more functions as needed...
-
-// Start the game loop
-requestAnimationFrame(play);
