@@ -12,6 +12,11 @@ let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
+// Bar variables
+let barWidth = 100;
+let barHeight = 20;
+let barX = (canvas.width - barWidth) / 2;
+
 // Images (replace with your image paths)
 const birdImg = new Image();
 birdImg.src = './travisImg.png';
@@ -37,6 +42,22 @@ function updateGravity() {
   birdY += gravity * gravityConstant;
   gravityConstant += 0.001; // Increase gravity pull slightly each frame
 }
+
+// Draw bar function
+function drawBar() {
+  ctx.fillStyle = '#FFD700'; // Gold color for the bar
+  ctx.fillRect(barX, canvas.height - barHeight, barWidth, barHeight);
+}
+
+// Handle mouse move event
+canvas.addEventListener('mousemove', (event) => {
+  barX = event.clientX - canvas.getBoundingClientRect().left - barWidth / 2;
+});
+
+// Handle touch move event for mobile
+canvas.addEventListener('touchmove', (event) => {
+  barX = event.touches[0].clientX - canvas.getBoundingClientRect().left - barWidth / 2;
+});
 
 // Game loop
 function gameLoop() {
@@ -88,6 +109,9 @@ function gameLoop() {
   if (birdY + birdImg.height > canvas.height) {
     gameOver();
   }
+
+  // Draw bar
+  drawBar();
 
   // Draw score
   ctx.fillStyle = '#000';
