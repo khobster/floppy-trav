@@ -38,7 +38,7 @@ function gameLoop() {
     let frame = frames[travisState];
 
     // Draw Travis
-    ctx.drawImage(travisSpriteSheet, frame.sourceX, frame.sourceY, 64, 64, birdX, birdY, 64, 64);
+    ctx.drawImage(travisSpriteSheet, 64, 64, 64, 64, birdX, birdY, 64, 64);
 
     // Draw Swifties (up and down)
     // You'll need to calculate the positions and use drawImage similarly to the bird
