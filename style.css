@@ -1,39 +1,44 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+} 
 
-body {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden; /* Prevent scrolling */
-}
+body { 
+    height: 100vh; 
+    width: 100vw; 
+    overflow: hidden;
+    background-color: skyblue; /* Temporary background color */
+} 
 
-.background {
-    height: 100vh;
-    width: 100vw;
-    background: url('background.png') repeat-x; /* Continuous scrolling background */
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1; /* Behind everything else */
-}
+.bird { 
+    height: 64px; /* Travis sprite height */
+    width: 64px; /* Travis sprite width */
+    position: fixed; 
+    top: 40vh; 
+    left: 30vw; 
+    z-index: 100; 
+    background-image: url('travis_sprite_sheet.png'); /* Travis sprite sheet */
+    background-position: 0 0; /* Initial sprite frame */
+} 
 
-.travis {
-    height: 64px; /* Height of Travis sprite */
-    width: 64px; /* Width of Travis sprite */
-    position: fixed;
-    top: 40vh;
-    left: 30vw;
-    z-index: 100;
-}
+.message { 
+    position: fixed; 
+    z-index: 10; 
+    font-size: 3vh; 
+    color: black; 
+    top: 12vh; 
+    left: 20vw; 
+    text-align: center; 
+} 
 
-.pipe_sprite { /* Style for Swiftie obstacles */
-    position: fixed;
-    height: 100px; /* Adjust as needed */
-    width: 100px; /* Adjust as needed */
-    background: url('swifties_upright.png'); /* Use upright Swifties image */
-}
+.score { 
+    position: fixed; 
+    z-index: 10; 
+    font-size: 5vh; 
+    color: goldenrod; 
+    top: 2vh; 
+    left: 2vw; 
+} 
 
 /* Add more styles as needed... */
