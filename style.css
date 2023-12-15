@@ -1,44 +1,17 @@
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-} 
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
 
-body { 
-    height: 100vh; 
-    width: 100vw; 
-    overflow: hidden;
-    background-color: skyblue; /* Temporary background color */
-} 
+canvas {
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+}
 
-.bird { 
-    height: 64px; /* Travis sprite height */
-    width: 64px; /* Travis sprite width */
-    position: fixed; 
-    top: 40vh; 
-    left: 30vw; 
-    z-index: 100; 
-    background-image: url('travis_sprite_sheet.png'); /* Travis sprite sheet */
-    background-position: 0 0; /* Initial sprite frame */
-} 
-
-.message { 
-    position: fixed; 
-    z-index: 10; 
-    font-size: 3vh; 
-    color: black; 
-    top: 12vh; 
-    left: 20vw; 
-    text-align: center; 
-} 
-
-.score { 
-    position: fixed; 
-    z-index: 10; 
-    font-size: 5vh; 
-    color: goldenrod; 
-    top: 2vh; 
-    left: 2vw; 
-} 
-
-/* Add more styles as needed... */
+.score-container {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 10px;
+}
