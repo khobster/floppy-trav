@@ -4,8 +4,8 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 0.5;
-let flapPower = 5;
+let gravity = 2;
+let flapPower = 9;
 let score = 0;
 let pipeGap = 100; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
