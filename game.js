@@ -27,7 +27,7 @@ function Pipe(x) {
 
 function flap() {
   bird.y -= flapPower;
-  flapPower += 0.1; // Increase flap power slightly each time
+  flapPower += 1.5; // Increase flap power slightly each time
 }
 
 function updateGravity() {
