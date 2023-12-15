@@ -5,10 +5,10 @@ const ctx = canvas.getContext('2d');
 let birdX = 50;
 let birdY = 100;
 let gravity = 2;
-let flapPower = 9;
+let flapPower = 20;
 let score = 0;
-let pipeGap = 100; // Gap between pipes
-let pipeSpeed = 3; // Speed of pipes moving
+let pipeGap = 400; // Gap between pipes
+let pipeSpeed = 1; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
 // Images (omitted for brevity, replace with your image paths)
