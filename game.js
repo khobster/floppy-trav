@@ -25,6 +25,16 @@ function Pipe(x) {
   this.bottomHeight = canvas.height - this.topHeight - pipeGap; // Calculate height for bottom pipe
 }
 
+function flap() {
+  bird.y -= flapPower;
+  flapPower += 0.1; // Increase flap power slightly each time
+}
+
+function updateGravity() {
+  bird.y += gravity * gravityConstant;
+  gravityConstant += 0.001; // Increase gravity pull slightly each frame
+}
+
 // Game loop
 function gameLoop() {
   // Update bird position
