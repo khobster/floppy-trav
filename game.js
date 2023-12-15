@@ -67,7 +67,7 @@ function gameLoop() {
   }
 
   // Draw bird
-  ctx.drawImage(birdImg, birdX, birdY);
+  ctx.drawImage(birdImg, birdX, birdY, birdImg.width * 1.5, birdImg.height * 1.5);
 
   // Check collision with pipes
   for (let i = 0; i < pipes.length; i++) {
