@@ -13,6 +13,8 @@ let pipes = []; // Array to store pipe objects
 
 // Images (omitted for brevity, replace with your image paths)
 const birdImg = new Image();
+birdImg.src = './travisImg.png';
+
 const pipeImg = new Image();
 
 // Pipe object constructor
