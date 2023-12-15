@@ -16,7 +16,7 @@ const birdImg = new Image();
 birdImg.src = './travisImg.png';
 
 const pipeImg = new Image();
-pipeImg.src = './swifties2.png';
+pipeImg.src = './evergreen.png';
 
 // Pipe object constructor
 function Pipe(x) {
