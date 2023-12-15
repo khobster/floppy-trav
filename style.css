@@ -1,10 +1,12 @@
 body {
   background-image: url(./background.png);
-  background-size: cover;
+  background-size: contain; /* or background-size: 500px 300px; */
   background-position: center;
 }
 
 canvas {
+    z-index: 1;
+    margin-top: 50px; /* or position: relative; top: -20px; */
     display: block;
     margin: 0 auto;
     border: 1px solid #ccc;
