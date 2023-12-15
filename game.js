@@ -4,14 +4,19 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 2; // Reduced gravity
-let gravityIncrement = 0.0005; // Reduced increment rate
+let gravity = 5;
+let gravityConstant = 1; // Added gravity constant
 let flapPower = 150; // Increased flap power
 let flapDecay = 0.95; // Flap power decay factor
 let score = 0;
 let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
+
+// Bar variables
+let barWidth = 100;
+let barHeight = 20;
+let barX = (canvas.width - barWidth) / 2;
 
 // Images (replace with your image paths)
 const birdImg = new Image();
@@ -38,9 +43,25 @@ function updateGravity() {
   if (flapPower < 100) {
     flapPower = 100; // Reset flap power if it gets too low
   }
-  birdY += gravity;
-  gravityConstant += gravityIncrement; // Increase gravity pull slightly each frame
+  birdY += gravity * gravityConstant;
+  gravityConstant += 0.001; // Increase gravity pull slightly each frame
 }
+
+// Draw bar function
+function drawBar() {
+  ctx.fillStyle = '#FFD700'; // Gold color for the bar
+  ctx.fillRect(barX, canvas.height - barHeight, barWidth, barHeight);
+}
+
+// Handle mouse move event
+canvas.addEventListener('mousemove', (event) => {
+  barX = event.clientX - canvas.getBoundingClientRect().left - barWidth / 2;
+});
+
+// Handle touch move event for mobile
+canvas.addEventListener('touchmove', (event) => {
+  barX = event.touches[0].clientX - canvas.getBoundingClientRect().left - barWidth / 2;
+});
 
 // Game loop
 function gameLoop() {
@@ -93,6 +114,9 @@ function gameLoop() {
     gameOver();
   }
 
+  // Draw bar
+  drawBar();
+
   // Draw score
   ctx.fillStyle = '#000';
   ctx.font = '20px Arial';
@@ -109,15 +133,11 @@ function gameOver() {
   score = 0;
 }
 
-// Event listener for flap (Removed bar related code)
+// Event listener for flap
 document.addEventListener('keydown', (event) => {
   if (event.key === ' ') {
     flap();
   }
 });
-
-// Event listeners for the control bar
-document.getElementById('controlBar').addEventListener('touchstart', flap);
-document.getElementById('controlBar').addEventListener('click', flap);
 
 gameLoop();
