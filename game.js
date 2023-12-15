@@ -5,13 +5,14 @@ const ctx = canvas.getContext('2d');
 let birdX = 50;
 let birdY = 100;
 let gravity = 5;
+let gravityConstant = 1; // Added gravity constant
 let flapPower = 100;
 let score = 0;
 let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
-// Images (omitted for brevity, replace with your image paths)
+// Images (replace with your image paths)
 const birdImg = new Image();
 birdImg.src = './travisImg.png';
 
@@ -21,17 +22,19 @@ pipeImg.src = './pipe.png';
 // Pipe object constructor
 function Pipe(x) {
   this.x = x;
-  this.topHeight = Math.random() * (canvas.height - pipeGap - 100) + 100; // Random height for top pipe
-  this.bottomHeight = canvas.height - this.topHeight - pipeGap; // Calculate height for bottom pipe
+  this.topHeight = Math.random() * (canvas.height - pipeGap - 100) + 100;
+  this.bottomHeight = canvas.height - this.topHeight - pipeGap;
 }
 
+// Flap function
 function flap() {
-  bird.y -= flapPower;
-  flapPower += 1.5; // Increase flap power slightly each time
+  birdY -= flapPower;
+  flapPower = 100; // Reset flap power after each flap
 }
 
+// Update gravity
 function updateGravity() {
-  bird.y += gravity * gravityConstant;
+  birdY += gravity * gravityConstant;
   gravityConstant += 0.001; // Increase gravity pull slightly each frame
 }
 
@@ -39,58 +42,51 @@ function updateGravity() {
 function gameLoop() {
   // Update bird position
   birdY += gravity;
+  updateGravity(); // Update gravity
 
   // Update pipes
   for (let i = 0; i < pipes.length; i++) {
     pipes[i].x -= pipeSpeed;
     if (pipes[i].x < -pipeImg.width) {
-      pipes.shift(); // Remove pipe if it goes off screen
-      score++; // Increase score for passing a pipe
+      pipes.shift();
+      score++;
     }
   }
 
   // Create new pipe if needed
-  if (pipes.length === 0) {
+  if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 300) {
     const pipeX = canvas.width;
     pipes.push(new Pipe(pipeX));
   }
 
-  // Draw background
+  // Clear and draw background
   ctx.fillStyle = '87CEEB';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw pipes
   for (let i = 0; i < pipes.length; i++) {
     const pipe = pipes[i];
-    ctx.drawImage(pipeImg, pipe.x, 0, pipeImg.width, pipe.topHeight); // Draw top pipe
-    ctx.drawImage(pipeImg, pipe.x, pipe.topHeight + pipeGap, pipeImg.width, pipe.bottomHeight); // Draw bottom pipe
+    ctx.drawImage(pipeImg, pipe.x, 0, pipeImg.width, pipe.topHeight);
+    ctx.drawImage(pipeImg, pipe.x, pipe.topHeight + pipeGap, pipeImg.width, pipe.bottomHeight);
   }
 
   // Draw bird
   ctx.drawImage(birdImg, birdX, birdY, birdImg.width * 1.5, birdImg.height * 1.5);
 
-  // Check collision with pipes
+  // Check collision
   for (let i = 0; i < pipes.length; i++) {
     const pipe = pipes[i];
     if (birdX + birdImg.width > pipe.x && birdX < pipe.x + pipeImg.width) {
-      if (birdY < pipe.topHeight || birdY > pipe.topHeight + pipeGap) { // Check if bird collides with top or bottom pipe
-        // Collision! Game over
-        alert('Game Over! Your score is: ' + score);
-        pipes = []; // Reset pipes
-        birdY = 100; // Reset bird position
-        score = 0; // Reset score
-        break; // Exit loop
+      if (birdY < pipe.topHeight || birdY + birdImg.height > pipe.topHeight + pipeGap) {
+        gameOver();
+        break;
       }
     }
   }
 
-  // Check collision with ground
+  // Collision with ground
   if (birdY + birdImg.height > canvas.height) {
-    // Collision! Game over
-    alert('Game Over! Your score is: ' + score);
-    pipes = []; // Reset pipes
-    birdY = 100; // Reset bird position
-    score = 0; // Reset score
+    gameOver();
   }
 
   // Draw score
@@ -101,10 +97,18 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Event listener
+// Game over function
+function gameOver() {
+  alert('Game Over! Your score is: ' + score);
+  pipes = [];
+  birdY = 100;
+  score = 0;
+}
+
+// Event listener for flap
 document.addEventListener('keydown', (event) => {
   if (event.key === ' ') {
-    birdY -= flapPower;
+    flap();
   }
 });
 
