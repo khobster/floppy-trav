@@ -45,7 +45,7 @@ function gameLoop() {
   }
 
   // Draw background
-  ctx.fillStyle = '#C0C0C0';
+  ctx.fillStyle = '87CEEB';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw pipes
