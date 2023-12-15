@@ -7,7 +7,7 @@ let birdY = 100;
 let gravity = 5;
 let flapPower = 100;
 let score = 0;
-let pipeGap = 250; // Gap between pipes
+let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
