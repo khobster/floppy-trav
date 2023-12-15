@@ -1,77 +1,46 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Game variables
-let birdX = 50;
-let birdY = 100;
-let gravity = 0.5;
-let flapPower = 5;
-let score = 0;
-let birdSprite;
-let swiftiesUpSprite;
-let swiftiesDownSprite;
-let backgroundSprite;
+// Load images
+const travisSpriteSheet = new Image();
+travisSpriteSheet.src = 'travis_sprite_sheet.png';
 
-// Load Images
-function loadImages() {
-    birdSprite = new Image();
-    swiftiesUpSprite = new Image();
-    swiftiesDownSprite = new Image();
-    backgroundSprite = new Image();
+const swiftiesUp = new Image();
+swiftiesUp.src = 'swifties_up.png';
 
-    birdSprite.src = 'travis_sprite_sheet.png';
-    swiftiesUpSprite.src = 'swifties_up_sprite_sheet.png';
-    swiftiesDownSprite.src = 'swifties_down_sprite_sheet.png';
-    backgroundSprite.src = 'background.png';
+const swiftiesDown = new Image();
+swiftiesDown.src = 'swifties_down.png';
 
-    // Only start the game loop when all images are loaded
-    let totalImages = 4;
-    let imagesLoaded = 0;
+const backgroundImg = new Image();
+backgroundImg.src = 'background.png';
 
-    function imageLoaded() {
-        imagesLoaded++;
-        if (imagesLoaded === totalImages) {
-            gameLoop();
-        }
-    }
+// Game variables and initialization code...
+// ...
 
-    birdSprite.onload = imageLoaded;
-    swiftiesUpSprite.onload = imageLoaded;
-    swiftiesDownSprite.onload = imageLoaded;
-    backgroundSprite.onload = imageLoaded;
-}
-
-// Game loop
 function gameLoop() {
-    // Update bird position
-    birdY += gravity;
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // Draw the background
+    ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 
-    // Draw background
-    ctx.drawImage(backgroundSprite, 0, 0, canvas.width, canvas.height);
+    // Draw Travis
+    ctx.drawImage(travisSpriteSheet, /* sourceX, sourceY, sourceWidth, sourceHeight, */ birdX, birdY, 64, 64);
 
-    // Draw pipes and bird
-    // Here you should add your logic to draw the swifties and animate Travis Kelce
-    // This part of the code is just a placeholder and should be replaced with your actual drawing code
-    ctx.drawImage(birdSprite, birdX, birdY);
+    // Draw Swifties (up and down)
+    // You'll need to calculate the positions and use drawImage similarly to the bird
+    // ...
 
-    // Check collision (code omitted for brevity)
-
-    // Update score (code omitted for brevity)
-
-    // Draw score
-    ctx.fillStyle = '#000';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${score}`, 10, 20);
+    // Rest of game loop logic...
+    // ...
 
     requestAnimationFrame(gameLoop);
 }
 
-// Event listener
+// Event listener for game controls
 document.addEventListener('keydown', (event) => {
-    if (event.key === ' ') {
-        birdY -= flapPower;
-    }
+    // Game control logic...
 });
 
-// Start loading images
-loadImages();
+// Start the game loop
+gameLoop();
