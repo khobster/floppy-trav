@@ -4,14 +4,14 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 5;
-let flapPower = 100;
+let gravity = 2; // Reduced gravity for smoother descent
+let flapPower = 80; // Reduced flap power for smoother ascent
 let score = 0;
 let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
-// Images (omitted for brevity, replace with your image paths)
+// Images (replace with your image paths)
 const birdImg = new Image();
 birdImg.src = './travisImg.png';
 
@@ -26,19 +26,22 @@ function Pipe(x) {
 }
 
 function flap() {
-  bird.y -= flapPower;
-  flapPower += 1.5; // Increase flap power slightly each time
-}
-
-function updateGravity() {
-  bird.y += gravity * gravityConstant;
-  gravityConstant += 0.001; // Increase gravity pull slightly each frame
+  birdY -= flapPower;
+  flapPower -= 4; // Gradual decrease of flap power
+  if (flapPower < 10) {
+    flapPower = 10; // Minimum flap power to avoid negative values
+  }
 }
 
 // Game loop
 function gameLoop() {
   // Update bird position
   birdY += gravity;
+
+  // Reset flap power if it's too low
+  if (flapPower < 30) {
+    flapPower = 80;
+  }
 
   // Update pipes
   for (let i = 0; i < pipes.length; i++) {
@@ -105,6 +108,8 @@ function gameLoop() {
 document.addEventListener('keydown', (event) => {
   if (event.key === ' ') {
     birdY -= flapPower;
+    flapPower = 80; // Reset flap power on key press
+    flap();
   }
 });
 
