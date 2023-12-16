@@ -4,16 +4,17 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 1.5;
-let flapPower = 12;
-let flapVelocity = 0;
+let gravity = 1.5; // Reduced gravity for smoother descent
+let flapPower = 12; // Adjusted flap power for a quicker jump
+let flapVelocity = 0; // Velocity of the bird immediately after flapping
+let flapDecay = 0.95; // Rate at which flap power decreases
 let score = 0;
-let pipeGap = 300;
-let pipeSpeed = 3;
-let pipes = [];
-let gameRunning = true;
+let pipeGap = 300; // Gap between pipes
+let pipeSpeed = 3; // Speed of pipes moving
+let pipes = []; // Array to store pipe objects
 let framesSinceLastPipe = 0;
 let pipeInterval = 100; // Frames between pipe generation
+let gameRunning = true;
 
 // Images
 const spriteSheet = new Image();
