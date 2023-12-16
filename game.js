@@ -1,47 +1,55 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Function to detect if the user is on a mobile device
+function isMobileDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+}
+
+// Game settings
+let gravity = 1.5; // Gravity for desktop
+let flapPower = 12; // Flap power for desktop
+let flapDecay = 0.95; // Flap decay for desktop
+
+// Adjust settings for mobile
+if (isMobileDevice()) {
+  gravity = 1.2; // Adjusted gravity for mobile
+  flapPower = 10; // Adjusted flap power for mobile
+  flapDecay = 0.9; // Adjusted flap decay for mobile
+}
+
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 1.5; // Reduced gravity for smoother descent
-let flapPower = 12; // Adjusted flap power for a quicker jump
-let flapVelocity = 0; // Velocity of the bird immediately after flapping
-let flapDecay = 0.95; // Rate at which flap power decreases
+let flapVelocity = 0;
 let score = 0;
-let pipeGap = 300; // Gap between pipes
-let pipeSpeed = 3; // Speed of pipes moving
-let pipes = []; // Array to store pipe objects
+let pipeGap = 300;
+let pipeSpeed = 3;
+let pipes = [];
 let framesSinceLastPipe = 0;
-let pipeInterval = 100; // Frames between pipe generation
+let pipeInterval = 100;
 let gameRunning = true;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
 
-// Set a flag to check if all images are loaded
 let imagesLoaded = 0;
 let totalImages = 2;
-
-function imageLoaded() {
+spriteSheet.onload = pipeImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
         gameLoop();
     }
-}
+};
 
-spriteSheet.onload = imageLoaded;
-pipeImg.onload = imageLoaded;
+spriteSheet.src = 'travisbird.png';
+pipeImg.src = './pipe.png';
 
-spriteSheet.src = 'travisbird.png'; // Sprite sheet for Travis Kelce riding the eagle
-pipeImg.src = './pipe.png'; // Image for the pipes
-
-// Sprite animation frames coordinates
 const spriteFrames = [
-  { x: 0, y: 0 },    // Frame 1: Wing down
-  { x: 92, y: 0 },   // Frame 2: Wing mid
-  { x: 184, y: 0 }   // Frame 3: Wing up
+  { x: 0, y: 0 },
+  { x: 92, y: 0 },
+  { x: 184, y: 0 }
 ];
 let currentFrameIndex = 0;
 let frameCount = 0;
@@ -52,13 +60,8 @@ function flap() {
   }
 }
 
-// Add touch event listener for mobile tap
 canvas.addEventListener('touchstart', flap, false);
-
-// Add mouse event listener for desktop click
-canvas.addEventListener('mousedown', flap, false);
-
-// Add keydown event listener for desktop spacebar
+canvas.addEventListener('mousedown', flap, false); // For desktop clicks
 document.addEventListener('keydown', function(event) {
   if (event.key === ' ' || event.code === 'Space') {
     flap();
@@ -70,13 +73,11 @@ function updateBirdPosition() {
   flapVelocity *= flapDecay;
   birdY += gravity;
 
-  // Prevent bird from going off screen
   if (birdY < 0) birdY = 0;
   if (birdY + 64 >= canvas.height) gameOver();
 }
 
 function drawBird() {
-  // Draw the current frame
   const frameX = spriteFrames[currentFrameIndex].x;
   ctx.drawImage(spriteSheet, frameX, 0, 92, 64, birdX, birdY, 92, 64);
 }
@@ -89,7 +90,6 @@ function updateFrame() {
   }
 }
 
-// Pipe object constructor
 function Pipe(x) {
   this.x = x;
   this.top = Math.random() * (canvas.height / 2);
@@ -139,7 +139,6 @@ function gameOver() {
   document.location.reload();
 }
 
-// Game loop
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   updateBirdPosition();
@@ -149,7 +148,6 @@ function gameLoop() {
   drawPipes();
   checkCollisions();
 
-  // Increment score and draw it
   if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
     score++;
   }
@@ -164,3 +162,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
   }
 }
+
+// Start the game loop once all images are loaded
