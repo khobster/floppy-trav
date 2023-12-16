@@ -4,14 +4,14 @@ const ctx = canvas.getContext('2d');
 // Game variables
 let birdX = 50;
 let birdY = 100;
-let gravity = 2; // Reduced gravity for smoother descent
-let flapPower = 80; // Reduced flap power for smoother ascent
+let gravity = 5;
+let flapPower = 100;
 let score = 0;
 let pipeGap = 300; // Gap between pipes
 let pipeSpeed = 3; // Speed of pipes moving
 let pipes = []; // Array to store pipe objects
 
-// Images (replace with your image paths)
+// Images
 const birdImg = new Image();
 birdImg.src = './travisImg.png';
 
@@ -27,21 +27,12 @@ function Pipe(x) {
 
 function flap() {
   birdY -= flapPower;
-  flapPower -= 4; // Gradual decrease of flap power
-  if (flapPower < 10) {
-    flapPower = 10; // Minimum flap power to avoid negative values
-  }
 }
 
 // Game loop
 function gameLoop() {
   // Update bird position
   birdY += gravity;
-
-  // Reset flap power if it's too low
-  if (flapPower < 30) {
-    flapPower = 80;
-  }
 
   // Update pipes
   for (let i = 0; i < pipes.length; i++) {
@@ -75,25 +66,30 @@ function gameLoop() {
   // Check collision with pipes
   for (let i = 0; i < pipes.length; i++) {
     const pipe = pipes[i];
-    if (birdX + birdImg.width > pipe.x && birdX < pipe.x + pipeImg.width) {
-      if (birdY < pipe.topHeight || birdY > pipe.topHeight + pipeGap) { // Check if bird collides with top or bottom pipe
-        // Collision! Game over
-        alert('Game Over! Your score is: ' + score);
-        pipes = []; // Reset pipes
-        birdY = 100; // Reset bird position
-        score = 0; // Reset score
-        break; // Exit loop
+    const pipeLeftEdge = pipe.x;
+    const pipeRightEdge = pipe.x + pipeImg.width;
+    const pipeTopHeight = pipe.topHeight;
+    const pipeBottomHeight = canvas.height - pipe.bottomHeight;
+    
+    const birdLeftEdge = birdX;
+    const birdRightEdge = birdX + birdImg.width * 1.5; // Adjusted for the bird's size
+    const birdTopEdge = birdY;
+    const birdBottomEdge = birdY + birdImg.height * 1.5; // Adjusted for the bird's size
+
+    // Check if bird collides with top or bottom pipe
+    if (birdRightEdge > pipeLeftEdge && birdLeftEdge < pipeRightEdge) {
+      if (birdTopEdge < pipeTopHeight || birdBottomEdge > pipeBottomHeight) {
+        // Collision detected
+        gameOver();
+        break;
       }
     }
   }
 
   // Check collision with ground
-  if (birdY + birdImg.height > canvas.height) {
+  if (birdY + birdImg.height * 1.5 > canvas.height) {
     // Collision! Game over
-    alert('Game Over! Your score is: ' + score);
-    pipes = []; // Reset pipes
-    birdY = 100; // Reset bird position
-    score = 0; // Reset score
+    gameOver();
   }
 
   // Draw score
@@ -104,12 +100,18 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Event listener
+// Game over function
+function gameOver() {
+  alert('Game Over! Your score is: ' + score);
+  pipes = []; // Reset pipes
+  birdY = 100; // Reset bird position
+  score = 0; // Reset score
+}
+
+// Event listener for flap
 document.addEventListener('keydown', (event) => {
   if (event.key === ' ') {
     birdY -= flapPower;
-    flapPower = 80; // Reset flap power on key press
-    flap();
   }
 });
 
