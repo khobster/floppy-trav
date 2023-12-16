@@ -144,9 +144,13 @@ function gameLoop() {
   if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
     score++;
   }
-  ctx.fillStyle = 'yellow';
-  ctx.font = '20px Arial';
-  ctx.fillText('Score: ' + score, 10, canvas.height - 20);
+ctx.strokeStyle = 'black'; // Color of the outline
+ctx.lineWidth = 3; // Width of the outline
+ctx.strokeText('Score: ' + score, 10, canvas.height - 20); // Outline stroke
+
+ctx.fillStyle = 'white'; // Color of the text
+ctx.fillText('Score: ' + score, 10, canvas.height - 20); // Fill text
+
 
   if (gameRunning) {
     requestAnimationFrame(gameLoop);
