@@ -17,7 +17,21 @@ let pipeInterval = 100; // Frames between pipe generation
 
 // Images
 const spriteSheet = new Image();
+const pipeImg = new Image();
+
+// Set a flag to check if all images are loaded
+let imagesLoaded = 0;
+let totalImages = 2; // Total number of images to load
+
+spriteSheet.onload = pipeImg.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        gameLoop();
+    }
+};
+
 spriteSheet.src = 'travisbird.png'; // The sprite sheet for Travis Kelce riding the eagle
+pipeImg.src = './pipe.png';
 
 // Sprite animation frames coordinates
 const spriteFrames = [
@@ -27,9 +41,6 @@ const spriteFrames = [
 ];
 let currentFrameIndex = 0;
 let frameCount = 0;
-
-const pipeImg = new Image();
-pipeImg.src = './pipe.png';
 
 function flap() {
   if (gameRunning) {
@@ -132,7 +143,7 @@ function gameLoop() {
   if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
     score++;
   }
-  ctx.fillStyle = '#FFFF00';
+  ctx.fillStyle = '#000';
   ctx.font = '20px Arial';
   ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
@@ -140,8 +151,3 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
   }
 }
-
-// Start the game loop once the sprite sheet is loaded
-spriteSheet.onload = function() {
-  gameLoop();
-};
