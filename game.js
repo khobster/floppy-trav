@@ -149,6 +149,7 @@ ctx.lineWidth = 3; // Width of the outline
 ctx.strokeText('Score: ' + score, 10, canvas.height - 20); // Outline stroke
 
 ctx.fillStyle = 'white'; // Color of the text
+ctx.font = '20px';
 ctx.fillText('Score: ' + score, 10, canvas.height - 20); // Fill text
 
 
