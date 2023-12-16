@@ -144,7 +144,7 @@ function gameLoop() {
   if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
     score++;
   }
-  ctx.fillStyle = '#000';
+  ctx.fillStyle = 'yellow';
   ctx.font = '20px Arial';
   ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
