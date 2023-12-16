@@ -12,6 +12,8 @@ let pipeGap = 300;
 let pipeSpeed = 3;
 let pipes = [];
 let gameRunning = true;
+let framesSinceLastPipe = 0;
+let pipeInterval = 100; // Frames between pipe generation
 
 // Images
 const spriteSheet = new Image();
@@ -37,14 +39,12 @@ function flap() {
 
 function updateBirdPosition() {
   birdY -= flapVelocity;
-  flapVelocity *= 0.95; // Flap decay
+  flapVelocity *= flapDecay; // Flap decay
   birdY += gravity;
 
-  // Prevent bird from moving above the screen
-  if (birdY < 0) {
-    birdY = 0;
-    flapVelocity = 0;
-  }
+  // Prevent bird from moving above or below the screen
+  if (birdY < 0) birdY = 0;
+  if (birdY + 64 >= canvas.height) gameOver();
 }
 
 function drawBird() {
@@ -54,48 +54,53 @@ function drawBird() {
 }
 
 function updateFrame() {
-  if (gameRunning) {
-    frameCount++;
-    if (frameCount > 10) {
-      frameCount = 0;
-      currentFrameIndex = (currentFrameIndex + 1) % spriteFrames.length;
-    }
+  frameCount++;
+  if (frameCount > 10) {
+    frameCount = 0;
+    currentFrameIndex = (currentFrameIndex + 1) % spriteFrames.length;
   }
 }
 
 // Pipe object constructor
-function Pipe() {
+function Pipe(x) {
+  this.x = x;
   this.top = Math.random() * (canvas.height / 2);
   this.bottom = canvas.height - this.top - pipeGap;
-  this.x = canvas.width;
   this.width = pipeImg.width;
-
-  this.show = function() {
-    ctx.drawImage(pipeImg, this.x, 0, this.width, this.top); // Top pipe
-    ctx.drawImage(pipeImg, this.x, canvas.height - this.bottom, this.width, this.bottom); // Bottom pipe
-  };
-
-  this.update = function() {
-    this.x -= pipeSpeed;
-  };
-
-  this.offscreen = function() {
-    return this.x < -this.width;
-  };
 }
 
-// Check for collisions
-function checkCollisions() {
-  for (let i = pipes.length - 1; i >= 0; i--) {
-    if (birdX < pipes[i].x + pipes[i].width &&
-      birdX + 92 > pipes[i].x &&
-      (birdY < pipes[i].top || birdY + 64 > canvas.height - pipes[i].bottom)) {
-      // Collision detected
-      gameOver();
-    }
+function drawPipes() {
+  pipes.forEach(function(pipe) {
+    ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top); // Top pipe
+    ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom); // Bottom pipe
+  });
+}
 
-    if (pipes[i].offscreen()) {
-      pipes.splice(i, 1);
+function updatePipes() {
+  if (framesSinceLastPipe === pipeInterval) {
+    pipes.push(new Pipe(canvas.width));
+    framesSinceLastPipe = 0;
+  } else {
+    framesSinceLastPipe++;
+  }
+
+  pipes.forEach(function(pipe, index) {
+    pipe.x -= pipeSpeed;
+    if (pipe.x + pipe.width < 0) {
+      pipes.splice(index, 1); // Remove the pipe from the array
+    }
+  });
+}
+
+function checkCollisions() {
+  for (let i = 0; i < pipes.length; i++) {
+    let pipe = pipes[i];
+    let hitTopPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY < pipe.top;
+    let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
+
+    if (hitTopPipe || hitBottomPipe) {
+      gameOver();
+      return;
     }
   }
 }
@@ -103,27 +108,12 @@ function checkCollisions() {
 function gameOver() {
   gameRunning = false;
   alert('Game Over! Your score is: ' + score);
-  document.location.reload(); // Restart the game
-}
-
-function drawPipes() {
-  pipes.forEach(function(pipe) {
-    pipe.show();
-  });
-}
-
-function updatePipes() {
-  if (frameCount % 100 === 0) { // Every 100 frames add a new pipe
-    pipes.push(new Pipe());
-  }
-
-  pipes.forEach(function(pipe) {
-    pipe.update();
-  });
+  // This is a basic reset; you might want to make a more sophisticated game over screen
+  document.location.reload(); 
 }
 
 document.addEventListener('keydown', function(event) {
-  if (event.keyCode === 32) { // Space key
+  if (event.key === ' ') {
     flap();
   }
 });
@@ -138,10 +128,13 @@ function gameLoop() {
   drawPipes();
   checkCollisions();
 
-  // Draw score
+  // Increment score and draw it
+  if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
+    score++;
+  }
   ctx.fillStyle = '#000';
   ctx.font = '20px Arial';
-  ctx.fillText(`Score: ${score}`, 10, canvas.height - 20);
+  ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
   if (gameRunning) {
     requestAnimationFrame(gameLoop);
