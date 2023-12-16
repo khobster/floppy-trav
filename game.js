@@ -15,17 +15,20 @@ let pipes = []; // Array to store pipe objects
 
 // Images
 const birdImg = new Image();
-birdImg.src = './travisImg.png';
-
+birdImg.src = './travisImg.png'; // This will be replaced with the sprite sheet
 const pipeImg = new Image();
 pipeImg.src = './pipe.png';
 
-// Pipe object constructor
-function Pipe(x) {
-  this.x = x;
-  this.topHeight = Math.random() * (canvas.height - pipeGap - 100) + 100; // Random height for top pipe
-  this.bottomHeight = canvas.height - this.topHeight - pipeGap; // Calculate height for bottom pipe
-}
+// Sprite sheet animation setup
+const spriteSheet = new Image();
+spriteSheet.src = 'travisbird.png'; // The sprite sheet for Travis Kelce riding the eagle
+const spriteFrames = [
+  { x: 0, y: 0 },    // Frame 1: Wing down
+  { x: 92, y: 0 },   // Frame 2: Wing mid
+  { x: 184, y: 0 }   // Frame 3: Wing up
+];
+let currentFrameIndex = 0;
+let frameCount = 0;
 
 function flap() {
   flapVelocity = flapPower; // Set initial velocity on flap
@@ -35,95 +38,62 @@ function updateBirdPosition() {
   birdY -= flapVelocity;
   flapVelocity *= flapDecay; // Decrease velocity each frame
   birdY += gravity; // Apply gravity
+}
 
-  if (birdY < 0) birdY = 0; // Prevent bird from going off screen
+function drawBird() {
+  // Clear the area where the bird will be drawn to prevent smearing
+  ctx.clearRect(birdX, birdY, 92, 64);
+  
+  // Calculate the current frame and its x coordinate on the sprite sheet
+  let frameX = currentFrameIndex * 92;
+  
+  // Draw the current frame
+  ctx.drawImage(spriteSheet, frameX, 0, 92, 64, birdX, birdY, 92, 64);
+}
+
+function updateFrame() {
+  frameCount++;
+  if (frameCount > 10) { // Change 10 to slow down or speed up the animation
+    frameCount = 0;
+    currentFrameIndex = (currentFrameIndex + 1) % spriteFrames.length;
+  }
+}
+
+// Pipe object constructor
+function Pipe(x) {
+  this.x = x;
+  this.topHeight = Math.random() * (canvas.height - pipeGap - 100) + 100;
+  this.bottomHeight = canvas.height - this.topHeight - pipeGap;
 }
 
 // Game loop
 function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas
   updateBirdPosition();
-
-  // Update pipes
-  for (let i = 0; i < pipes.length; i++) {
-    pipes[i].x -= pipeSpeed;
-    if (pipes[i].x < -pipeImg.width) {
-      pipes.shift(); // Remove pipe if it goes off screen
-      score++; // Increase score for passing a pipe
-    }
-  }
-
-  // Create new pipe if needed
-  if (pipes.length === 0) {
-    const pipeX = canvas.width;
-    pipes.push(new Pipe(pipeX));
-  }
-
-  // Draw background
-  ctx.fillStyle = '87CEEB';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw pipes
-  for (let i = 0; i < pipes.length; i++) {
-    const pipe = pipes[i];
-    ctx.drawImage(pipeImg, pipe.x, 0, pipeImg.width, pipe.topHeight); // Draw top pipe
-    ctx.drawImage(pipeImg, pipe.x, pipe.topHeight + pipeGap, pipeImg.width, pipe.bottomHeight); // Draw bottom pipe
-  }
-
-  // Draw bird
-  ctx.drawImage(birdImg, birdX, birdY, birdImg.width * 1.5, birdImg.height * 1.5);
-
-  // Check collision with pipes and ground
-  checkCollisions();
-
-  // Draw score
-  ctx.fillStyle = '#000';
-  ctx.font = '20px Arial';
-  ctx.fillText(`Score: ${score}`, 10, 20);
+  updateFrame(); // Update the animation frame
+  drawBird(); // Draw the bird with the current animation frame
+  
+  // ... your existing pipe and collision code ...
 
   requestAnimationFrame(gameLoop);
 }
 
+// Check collisions (your existing function)
 function checkCollisions() {
-  for (let i = 0; i < pipes.length; i++) {
-    const pipe = pipes[i];
-    const pipeLeftEdge = pipe.x;
-    const pipeRightEdge = pipe.x + pipeImg.width;
-    const pipeTopHeight = pipe.topHeight;
-    const pipeBottomHeight = canvas.height - pipe.bottomHeight;
-    
-    const birdLeftEdge = birdX;
-    const birdRightEdge = birdX + birdImg.width * 1.5;
-    const birdTopEdge = birdY;
-    const birdBottomEdge = birdY + birdImg.height * 1.5;
-
-    // Check if bird collides with top or bottom pipe
-    if (birdRightEdge > pipeLeftEdge && birdLeftEdge < pipeRightEdge) {
-      if (birdTopEdge < pipeTopHeight || birdBottomEdge > pipeBottomHeight) {
-        gameOver();
-        return;
-      }
-    }
-  }
-
-  // Check collision with ground
-  if (birdY + birdImg.height * 1.5 > canvas.height) {
-    gameOver();
-  }
+  // ... your existing collision detection code ...
 }
 
-// Game over function
+// Game over function (your existing function)
 function gameOver() {
-  alert('Game Over! Your score is: ' + score);
-  pipes = []; // Reset pipes
-  birdY = 100; // Reset bird position
-  score = 0; // Reset score
+  // ... your existing game over code ...
 }
 
-// Event listener for flap
+// Event listener for flap (your existing event listener)
 document.addEventListener('keydown', (event) => {
   if (event.key === ' ') {
     flap();
   }
 });
 
+// Start the game loop
 gameLoop();
