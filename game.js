@@ -52,9 +52,18 @@ function flap() {
   }
 }
 
-// Add touch and click event listeners for mobile and desktop
+// Add touch event listener for mobile tap
 canvas.addEventListener('touchstart', flap, false);
+
+// Add mouse event listener for desktop click
 canvas.addEventListener('mousedown', flap, false);
+
+// Add keydown event listener for desktop spacebar
+document.addEventListener('keydown', function(event) {
+  if (event.key === ' ' || event.code === 'Space') {
+    flap();
+  }
+}, false);
 
 function updateBirdPosition() {
   birdY -= flapVelocity;
