@@ -28,63 +28,46 @@ let pipeSpeed = 3;
 let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
-let gameRunning = false; // Game should not run until start is pressed
+let gameRunning = true;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
 
-// Image loading
 let imagesLoaded = 0;
 let totalImages = 2;
 spriteSheet.onload = pipeImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
-        // Images are loaded, show the welcome screen
-        document.getElementById('welcomeScreen').style.display = 'block';
+        gameLoop();
     }
 };
 
-spriteSheet.src = 'travisbird.png'; // Replace with the path to your sprite sheet
-pipeImg.src = './pipe.png'; // Replace with the path to your pipe image
+spriteSheet.src = 'travisbird.png';
+pipeImg.src = './pipe.png';
 
-// Sprite animation frames coordinates
 const spriteFrames = [
-  { x: 0, y: 0 },    // Frame 1: Wing down
-  { x: 92, y: 0 },   // Frame 2: Wing mid
-  { x: 184, y: 0 }   // Frame 3: Wing up
+  { x: 0, y: 0 },
+  { x: 92, y: 0 },
+  { x: 184, y: 0 }
 ];
 let currentFrameIndex = 0;
 let frameCount = 0;
 
-// Function to handle user flap (spacebar, click, or tap)
 function flap() {
   if (gameRunning) {
     flapVelocity = flapPower;
   }
 }
 
-// Start the game when the welcome screen is clicked/tapped
-document.getElementById('welcomeScreen').addEventListener('click', startGame);
-document.getElementById('welcomeScreen').addEventListener('touchstart', startGame);
-
-// Event listeners for desktop controls
+canvas.addEventListener('touchstart', flap, false);
+canvas.addEventListener('mousedown', flap, false); // For desktop clicks
 document.addEventListener('keydown', function(event) {
   if (event.key === ' ' || event.code === 'Space') {
     flap();
   }
 }, false);
 
-function startGame() {
-  // Hide the welcome screen
-  document.getElementById('welcomeScreen').style.display = 'none';
-
-  // Start the game loop
-  gameRunning = true;
-  gameLoop();
-}
-
-// Update the bird's position
 function updateBirdPosition() {
   birdY -= flapVelocity;
   flapVelocity *= flapDecay;
@@ -94,13 +77,11 @@ function updateBirdPosition() {
   if (birdY + 64 >= canvas.height) gameOver();
 }
 
-// Draw the bird
 function drawBird() {
   const frameX = spriteFrames[currentFrameIndex].x;
   ctx.drawImage(spriteSheet, frameX, 0, 92, 64, birdX, birdY, 92, 64);
 }
 
-// Update the frame for sprite animation
 function updateFrame() {
   frameCount++;
   if (frameCount > 10) {
@@ -109,7 +90,6 @@ function updateFrame() {
   }
 }
 
-// Pipe constructor
 function Pipe(x) {
   this.x = x;
   this.top = Math.random() * (canvas.height / 2);
@@ -117,7 +97,6 @@ function Pipe(x) {
   this.width = pipeImg.width;
 }
 
-// Draw pipes
 function drawPipes() {
   pipes.forEach(function(pipe) {
     ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
@@ -125,7 +104,6 @@ function drawPipes() {
   });
 }
 
-// Update pipes
 function updatePipes() {
   if (framesSinceLastPipe === pipeInterval) {
     pipes.push(new Pipe(canvas.width));
@@ -142,7 +120,6 @@ function updatePipes() {
   });
 }
 
-// Check for collisions
 function checkCollisions() {
   for (let i = 0; i < pipes.length; i++) {
     let pipe = pipes[i];
@@ -156,17 +133,13 @@ function checkCollisions() {
   }
 }
 
-// Handle game over
 function gameOver() {
   gameRunning = false;
   alert('Game Over! Your score is: ' + score);
   document.location.reload();
 }
 
-// Game loop function
 function gameLoop() {
-  if (!gameRunning) return;
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   updateBirdPosition();
   updateFrame();
@@ -175,7 +148,9 @@ function gameLoop() {
   drawPipes();
   checkCollisions();
 
-  // Score display in the lower left corner
+  if (gameRunning && framesSinceLastPipe % pipeInterval === 0) {
+    score++;
+  }
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 3;
   ctx.strokeText('Score: ' + score, 10, canvas.height - 20);
@@ -183,5 +158,9 @@ function gameLoop() {
   ctx.font = '20px Arial';
   ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
-  requestAnimationFrame(gameLoop);
+  if (gameRunning) {
+    requestAnimationFrame(gameLoop);
+  }
 }
+
+// Start the game loop once all images are loaded
