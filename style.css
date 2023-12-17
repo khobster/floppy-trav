@@ -22,7 +22,7 @@ canvas {
   background: url('trav2taywelcomescreendec17.gif') no-repeat center center;
   background-size: contain;
   width: 100%;   /* Adjust to match the width of the canvas */
-  height: 80%;  /* Adjust to match the height of the canvas */
+  height: 60%;  /* Adjust to match the height of the canvas */
   position: absolute;
   top: 0;
   left: 0;
