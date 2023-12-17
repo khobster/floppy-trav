@@ -17,3 +17,14 @@ canvas {
     color: yellow
     margin-top: 10px;
 }
+
+#welcomeScreen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+}
