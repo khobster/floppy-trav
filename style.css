@@ -19,12 +19,11 @@ canvas {
 }
 
 #welcomeScreen {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  background: url('trav2taywelcomescreendec17.gif') no-repeat center center;
+  background-size: contain;
+  width: 100%;   /* Adjust to match the width of the canvas */
+  height: 100%;  /* Adjust to match the height of the canvas */
+  position: absolute;
+  top: 0;
+  left: 0;
 }
