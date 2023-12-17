@@ -46,7 +46,7 @@ spriteSheet.onload = pipeImg.onload = () => {
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = './lipstick.png';
+pipeImg.src = './pylon.png';
 
 // Sprite animation frames coordinates
 const spriteFrames = [
