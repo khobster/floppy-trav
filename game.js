@@ -40,6 +40,7 @@ let totalImages = 2;
 spriteSheet.onload = pipeImg.onload = () => {
   imagesLoaded++;
   if (imagesLoaded === totalImages) {
+    adjustWelcomeScreenSize();
     document.getElementById('welcomeScreen').style.display = 'block';
   }
 };
@@ -67,7 +68,11 @@ function flap() {
 document.getElementById('welcomeScreen').addEventListener('click', startGame);
 document.getElementById('welcomeScreen').addEventListener('touchstart', startGame);
 
-// Event listeners for desktop keyboard controls
+// Event listeners for touch and mouse controls
+canvas.addEventListener('touchstart', flap, false);
+canvas.addEventListener('mousedown', flap, false);
+
+// Event listener for desktop keyboard controls
 document.addEventListener('keydown', function(event) {
   if (event.key === ' ' || event.code === 'Space') {
     flap();
@@ -120,22 +125,21 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    framesSinceLastPipe++;
-    if (framesSinceLastPipe >= pipeInterval) {
-        pipes.push(new Pipe(canvas.width));
-        framesSinceLastPipe = 0;
-    }
+  framesSinceLastPipe++;
+  if (framesSinceLastPipe >= pipeInterval) {
+    pipes.push(new Pipe(canvas.width));
+    framesSinceLastPipe = 0;
+  }
 
-    pipes.forEach(function(pipe, index) {
-        pipe.x -= pipeSpeed;
-        // Increment score when a pipe goes off-screen (passed by the bird)
-        if (pipe.x + pipe.width < 0) {
-            pipes.splice(index, 1); // Remove the pipe from the array
-            if (index === 0) { // Increment score for the first pipe in the array
-                score++;
-            }
-        }
-    });
+  pipes.forEach(function(pipe, index) {
+    pipe.x -= pipeSpeed;
+    if (pipe.x + pipe.width < 0) {
+      pipes.splice(index, 1);
+      if (index === 0) { // Increment score for the first pipe in the array
+        score++;
+      }
+    }
+  });
 }
 
 function checkCollisions() {
@@ -156,6 +160,16 @@ function gameOver() {
   alert('Game Over! Your score is: ' + score);
   document.location.reload();
 }
+
+// Adjust the welcome screen size to match the canvas
+function adjustWelcomeScreenSize() {
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  welcomeScreen.style.width = canvas.width + 'px';
+  welcomeScreen.style.height = canvas.height + 'px';
+}
+
+// Adjust the welcome screen size on load and window resize
+window.addEventListener('resize', adjustWelcomeScreenSize);
 
 function gameLoop() {
   if (!gameRunning) return;
@@ -178,14 +192,3 @@ function gameLoop() {
 
   requestAnimationFrame(gameLoop);
 }
-
-// Adjust the welcome screen size to match the canvas
-function adjustWelcomeScreenSize() {
-  const welcomeScreen = document.getElementById('welcomeScreen');
-  welcomeScreen.style.width = canvas.width + 'px';
-  welcomeScreen.style.height = canvas.height + 'px';
-}
-
-// Adjust the welcome screen size on load and window resize
-adjustWelcomeScreenSize();
-window.addEventListener('resize', adjustWelcomeScreenSize);
