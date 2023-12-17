@@ -63,9 +63,33 @@ function flap() {
   }
 }
 
+// Separate event handlers for touch and mouse to prevent double-trigger on mobile
+function handleTouchStart() {
+  if (isMobileDevice()) {
+    flap();
+  }
+}
+
+function handleMouseDown() {
+  if (!isMobileDevice()) {
+    flap();
+  }
+}
+
 // Start the game when the welcome screen is clicked/tapped
 document.getElementById('welcomeScreen').addEventListener('click', startGame);
 document.getElementById('welcomeScreen').addEventListener('touchstart', startGame);
+
+// Event listeners for touch and mouse controls
+canvas.addEventListener('touchstart', handleTouchStart, false);
+canvas.addEventListener('mousedown', handleMouseDown, false);
+
+// Event listener for desktop keyboard controls
+document.addEventListener('keydown', function(event) {
+  if (event.key === ' ' || event.code === 'Space') {
+    flap();
+  }
+}, false);
 
 function startGame() {
   // Hide the welcome screen
@@ -76,14 +100,6 @@ function startGame() {
   gameLoop();
 }
 
-// Event listeners for desktop controls
-document.addEventListener('keydown', function(event) {
-  if (event.key === ' ' || event.code === 'Space') {
-    flap();
-  }
-}, false);
-
-// Update the bird's position
 function updateBirdPosition() {
   birdY -= flapVelocity;
   flapVelocity *= flapDecay;
@@ -93,13 +109,11 @@ function updateBirdPosition() {
   if (birdY + 64 >= canvas.height) gameOver();
 }
 
-// Draw the bird
 function drawBird() {
   const frameX = spriteFrames[currentFrameIndex].x;
   ctx.drawImage(spriteSheet, frameX, 0, 92, 64, birdX, birdY, 92, 64);
 }
 
-// Update the frame for sprite animation
 function updateFrame() {
   frameCount++;
   if (frameCount > 10) {
@@ -108,7 +122,6 @@ function updateFrame() {
   }
 }
 
-// Pipe constructor
 function Pipe(x) {
   this.x = x;
   this.top = Math.random() * (canvas.height / 2);
@@ -116,7 +129,6 @@ function Pipe(x) {
   this.width = pipeImg.width;
 }
 
-// Draw pipes
 function drawPipes() {
   pipes.forEach(function(pipe) {
     ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
@@ -124,14 +136,11 @@ function drawPipes() {
   });
 }
 
-// Update pipes
 function updatePipes() {
+  framesSinceLastPipe++;
   if (framesSinceLastPipe >= pipeInterval) {
     pipes.push(new Pipe(canvas.width));
     framesSinceLastPipe = 0;
-    score++; // Increase score for each new set of pipes
-  } else {
-    framesSinceLastPipe++;
   }
 
   pipes.forEach(function(pipe, index) {
@@ -142,7 +151,6 @@ function updatePipes() {
   });
 }
 
-// Check for collisions
 function checkCollisions() {
   for (let i = 0; i < pipes.length; i++) {
     let pipe = pipes[i];
@@ -156,14 +164,12 @@ function checkCollisions() {
   }
 }
 
-// Handle game over
 function gameOver() {
   gameRunning = false;
   alert('Game Over! Your score is: ' + score);
   document.location.reload();
 }
 
-// Game loop function
 function gameLoop() {
   if (!gameRunning) return;
 
