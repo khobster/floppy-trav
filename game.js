@@ -63,28 +63,11 @@ function flap() {
   }
 }
 
-// Separate event handlers for touch and mouse to prevent double-trigger on mobile
-function handleTouchStart() {
-  if (isMobileDevice()) {
-    flap();
-  }
-}
-
-function handleMouseDown() {
-  if (!isMobileDevice()) {
-    flap();
-  }
-}
-
 // Start the game when the welcome screen is clicked/tapped
 document.getElementById('welcomeScreen').addEventListener('click', startGame);
 document.getElementById('welcomeScreen').addEventListener('touchstart', startGame);
 
-// Event listeners for touch and mouse controls
-canvas.addEventListener('touchstart', handleTouchStart, false);
-canvas.addEventListener('mousedown', handleMouseDown, false);
-
-// Event listener for desktop keyboard controls
+// Event listeners for desktop keyboard controls
 document.addEventListener('keydown', function(event) {
   if (event.key === ' ' || event.code === 'Space') {
     flap();
@@ -195,3 +178,14 @@ function gameLoop() {
 
   requestAnimationFrame(gameLoop);
 }
+
+// Adjust the welcome screen size to match the canvas
+function adjustWelcomeScreenSize() {
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  welcomeScreen.style.width = canvas.width + 'px';
+  welcomeScreen.style.height = canvas.height + 'px';
+}
+
+// Adjust the welcome screen size on load and window resize
+adjustWelcomeScreenSize();
+window.addEventListener('resize', adjustWelcomeScreenSize);
