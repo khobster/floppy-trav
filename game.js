@@ -203,7 +203,7 @@ function gameLoop() {
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
     // Check for win condition
-    if (score >= 25) {
+    if (score >= 10) {
         showWinScreen();
     } else {
         requestAnimationFrame(gameLoop);
