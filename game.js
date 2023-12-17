@@ -137,18 +137,22 @@ function drawPipes() {
 }
 
 function updatePipes() {
-  framesSinceLastPipe++;
-  if (framesSinceLastPipe >= pipeInterval) {
-    pipes.push(new Pipe(canvas.width));
-    framesSinceLastPipe = 0;
-  }
-
-  pipes.forEach(function(pipe, index) {
-    pipe.x -= pipeSpeed;
-    if (pipe.x + pipe.width < 0) {
-      pipes.splice(index, 1);
+    framesSinceLastPipe++;
+    if (framesSinceLastPipe >= pipeInterval) {
+        pipes.push(new Pipe(canvas.width));
+        framesSinceLastPipe = 0;
     }
-  });
+
+    pipes.forEach(function(pipe, index) {
+        pipe.x -= pipeSpeed;
+        // Increment score when a pipe goes off-screen (passed by the bird)
+        if (pipe.x + pipe.width < 0) {
+            pipes.splice(index, 1); // Remove the pipe from the array
+            if (index === 0) { // Increment score for the first pipe in the array
+                score++;
+            }
+        }
+    });
 }
 
 function checkCollisions() {
