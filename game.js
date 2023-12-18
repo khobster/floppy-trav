@@ -8,7 +8,7 @@ function isMobileDevice() {
 
 // Game settings
 let gravity = 1.5; // Gravity for desktop
-let flapPower = 12; // Flap power for desktop
+let flapPower = 9; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
@@ -48,7 +48,7 @@ spriteSheet.onload = pipeImg.onload = finalPipeImg.onload = () => {
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = 'beam.gif'; // Path to the beam image
+pipeImg.src = 'purplebeam2.png'; // Path to the beam image
 finalPipeImg.src = 'lastpipe.png'; // Path to the final goal image
 
 // Sprite animation frames coordinates
