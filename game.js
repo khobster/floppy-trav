@@ -1,6 +1,13 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Adjust the welcome screen size to match the canvas
+function adjustWelcomeScreenSize() {
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    welcomeScreen.style.width = canvas.width + 'px';
+    welcomeScreen.style.height = canvas.height + 'px';
+}
+
 // Function to detect if the user is on a mobile device
 function isMobileDevice() {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
@@ -8,7 +15,7 @@ function isMobileDevice() {
 
 // Game settings
 let gravity = 1.5; // Gravity for desktop
-let flapPower = 12; // Flap power for desktop
+let flapPower = 10; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
@@ -29,7 +36,6 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false; // Game starts when welcome screen is interacted with
-let finalPipeReached = false;
 
 // Images
 const spriteSheet = new Image();
@@ -42,14 +48,14 @@ let totalImages = 3; // Include the last pipe image
 spriteSheet.onload = pipeImg.onload = lastPipeImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
-        adjustWelcomeScreenSize();
+        adjustWelcomeScreenSize(); // Call function after it is defined
         document.getElementById('welcomeScreen').style.display = 'block';
     }
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = './pipe.png';
-lastPipeImg.src = 'lastpipe.png'; // Path to the final pipe image
+pipeImg.src = './purplebeam2.png';
+lastPipeImg.src = 'lastpipe.png'; // Make sure this is the correct path
 
 // Sprite animation frames coordinates
 const spriteFrames = [
@@ -122,32 +128,29 @@ function Pipe(x) {
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
-        ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
-        ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        if (pipe !== finalPipe) { // Check if it's not the final pipe
+            ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
+            ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        } else {
+            // Draw the final pipe
+            ctx.drawImage(lastPipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        }
     });
-
-    if (finalPipeReached) {
-        drawFinalPipe();
-    }
-}
-
-function drawFinalPipe() {
-    ctx.drawImage(lastPipeImg, canvas.width - lastPipeImg.width, canvas.height - lastPipeImg.height);
 }
 
 function updatePipes() {
     framesSinceLastPipe++;
-    if (!finalPipeReached && framesSinceLastPipe >= pipeInterval) {
-        if (score < 5) {
-            pipes.push(new Pipe(canvas.width));
-            framesSinceLastPipe = 0;
-        } else {
-            finalPipeReached = true; // Stop new pipes and prepare to draw the final pipe
-        }
+    if (score < 5 && framesSinceLastPipe >= pipeInterval) {
+        pipes.push(new Pipe(canvas.width));
+        framesSinceLastPipe = 0;
+    } else if (score === 5 && !finalPipeShown) {
+        // Show the final pipe
+        pipes.push(new Pipe(canvas.width));
+        finalPipeShown = true;
     }
 
     pipes.forEach(function(pipe, index) {
-        if (!finalPipeReached) {
+        if (!finalPipeShown || pipe !== pipes[pipes.length - 1]) {
             pipe.x -= pipeSpeed;
             if (pipe.x + pipe.width < 0) {
                 pipes.splice(index, 1);
@@ -159,6 +162,8 @@ function updatePipes() {
     });
 }
 
+let finalPipeShown = false; // Flag to check if the final pipe is shown
+
 function checkCollisions() {
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
@@ -166,25 +171,28 @@ function checkCollisions() {
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
         if (hitTopPipe || hitBottomPipe) {
-            gameOver();
+            if (pipe === pipes[pipes.length - 1] && finalPipeShown) {
+                // Collided with the final pipe, win the game
+                winGame();
+            } else {
+                gameOver();
+            }
             return;
         }
     }
+}
 
-    if (finalPipeReached && birdX + 92 > canvas.width - lastPipeImg.width) {
-        winGame(); // Check collision with the final pipe
-    }
+function winGame() {
+    gameRunning = false;
+    alert('Congratulations, you win!');
+    // Perform additional win logic if necessary
+    // For instance, display win screen or reload the game
+    document.location.reload();
 }
 
 function gameOver() {
     gameRunning = false;
     alert('Game Over! Your score is: ' + score);
-    document.location.reload();
-}
-
-function winGame() {
-    gameRunning = false;
-    alert('Congratulations! You have won the game!');
     document.location.reload();
 }
 
