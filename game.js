@@ -29,7 +29,9 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false;
-let finalObstacleAppeared = false;
+let finalGoalTimer = 0;
+const finalGoalDelay = 180; // Frames to wait before showing the final goal
+let finalGoalShown = false;
 
 // Images
 const spriteSheet = new Image();
@@ -48,8 +50,8 @@ spriteSheet.onload = pipeImg.onload = finalObstacleImg.onload = () => {
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = './purplebeam2.png';
-finalObstacleImg.src = 'lastpipe.png'; // Make sure this is the correct path
+pipeImg.src = './pipe.png';
+finalObstacleImg.src = 'lastpipe.png'; // Path to the final goal image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
@@ -110,23 +112,23 @@ function updateFrame() {
     }
 }
 
-function Pipe(x, type = 'normal') {
+function Pipe(x) {
     this.x = x;
     this.top = Math.random() * (canvas.height / 2);
     this.bottom = canvas.height - this.top - pipeGap;
-    this.width = type === 'final' ? finalObstacleImg.width : pipeImg.width;
-    this.type = type;
+    this.width = pipeImg.width;
 }
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
-        if (pipe.type === 'final') {
-            ctx.drawImage(finalObstacleImg, pipe.x, 0, finalObstacleImg.width, canvas.height);
-        } else {
-            ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
-            ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
-        }
+        ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
+        ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
     });
+
+    // Draw the final goal if it's time
+    if (finalGoalShown) {
+        ctx.drawImage(finalObstacleImg, canvas.width - finalObstacleImg.width, 0, finalObstacleImg.width, canvas.height);
+    }
 }
 
 function updatePipes() {
@@ -136,16 +138,18 @@ function updatePipes() {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
         }
-    } else if (!finalObstacleAppeared && framesSinceLastPipe >= (pipeInterval * 3)) {
-        pipes.push(new Pipe(canvas.width, 'final'));
-        finalObstacleAppeared = true;
+    } else if (!finalGoalShown) {
+        finalGoalTimer++;
+        if (finalGoalTimer >= finalGoalDelay) {
+            finalGoalShown = true;
+        }
     }
 
     pipes.forEach(function(pipe, index) {
         pipe.x -= pipeSpeed;
         if (pipe.x + pipe.width < 0) {
             pipes.splice(index, 1);
-            if (!finalObstacleAppeared && index === 0) { 
+            if (!finalGoalShown && index === 0) {
                 score++;
             }
         }
@@ -155,11 +159,11 @@ function updatePipes() {
 function checkCollisions() {
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
-        let hitTopPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY < pipe.top;
-        let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
+        let hitPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x &&
+                      (birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
 
-        if (hitTopPipe || hitBottomPipe) {
-            if (pipe.type === 'final') {
+        if (hitPipe) {
+            if (finalGoalShown && pipe === pipes[pipes.length - 1]) {
                 gameRunning = false;
                 alert('You win!');
                 document.location.reload();
@@ -177,7 +181,6 @@ function gameOver() {
     document.location.reload();
 }
 
-// Adjust the welcome screen size to match the canvas
 function adjustWelcomeScreenSize() {
     const welcomeScreen = document.getElementById('welcomeScreen');
     welcomeScreen.style.width = canvas.width + 'px';
