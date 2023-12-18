@@ -8,7 +8,7 @@ function isMobileDevice() {
 
 // Game settings
 let gravity = 1.5; // Gravity for desktop
-let flapPower = 9; // Flap power for desktop
+let flapPower = 12; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
@@ -28,18 +28,18 @@ let pipeSpeed = 3;
 let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
-let gameRunning = false;
-let castleAppeared = false;
+let gameRunning = false; // Game starts when welcome screen is interacted with
+let finalPipeReached = false;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
-const castleImage = new Image();
+const lastPipeImg = new Image(); // Image for the final pipe
 
 // Load images and show welcome screen
 let imagesLoaded = 0;
-let totalImages = 3;
-spriteSheet.onload = pipeImg.onload = castleImage.onload = () => {
+let totalImages = 3; // Include the last pipe image
+spriteSheet.onload = pipeImg.onload = lastPipeImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
         adjustWelcomeScreenSize();
@@ -48,14 +48,14 @@ spriteSheet.onload = pipeImg.onload = castleImage.onload = () => {
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = './purplebeam2.png';
-castleImage.src = 'tayincastle1.png'; // Make sure this is the correct path
+pipeImg.src = './pipe.png';
+lastPipeImg.src = 'lastpipe.png'; // Path to the final pipe image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
-    { x: 0, y: 0 },
-    { x: 92, y: 0 },
-    { x: 184, y: 0 }
+    { x: 0, y: 0 }, // Frame 1: Wing down
+    { x: 92, y: 0 }, // Frame 2: Wing mid
+    { x: 184, y: 0 } // Frame 3: Wing up
 ];
 let currentFrameIndex = 0;
 let frameCount = 0;
@@ -83,7 +83,10 @@ document.addEventListener('keydown', function(event) {
 }, false);
 
 function startGame() {
+    // Hide the welcome screen
     document.getElementById('welcomeScreen').style.display = 'none';
+
+    // Start the game loop
     gameRunning = true;
     gameLoop();
 }
@@ -122,26 +125,35 @@ function drawPipes() {
         ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
         ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
     });
+
+    if (finalPipeReached) {
+        drawFinalPipe();
+    }
+}
+
+function drawFinalPipe() {
+    ctx.drawImage(lastPipeImg, canvas.width - lastPipeImg.width, canvas.height - lastPipeImg.height);
 }
 
 function updatePipes() {
-    if (score < 5) {
-        framesSinceLastPipe++;
-        if (framesSinceLastPipe >= pipeInterval) {
+    framesSinceLastPipe++;
+    if (!finalPipeReached && framesSinceLastPipe >= pipeInterval) {
+        if (score < 5) {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
+        } else {
+            finalPipeReached = true; // Stop new pipes and prepare to draw the final pipe
         }
-    } else if (!castleAppeared && framesSinceLastPipe >= (pipeInterval * 3)) {
-        pipes.push(new Pipe(canvas.width, 'castle'));
-        castleAppeared = true;
     }
 
     pipes.forEach(function(pipe, index) {
-        pipe.x -= pipeSpeed;
-        if (pipe.x + pipe.width < 0) {
-            pipes.splice(index, 1);
-            if (!castleAppeared && index === 0) { 
-                score++;
+        if (!finalPipeReached) {
+            pipe.x -= pipeSpeed;
+            if (pipe.x + pipe.width < 0) {
+                pipes.splice(index, 1);
+                if (index === 0) { // Increment score for the first pipe in the array
+                    score++;
+                }
             }
         }
     });
@@ -154,15 +166,13 @@ function checkCollisions() {
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
         if (hitTopPipe || hitBottomPipe) {
-            if (pipe.type === 'castle') {
-                gameRunning = false;
-                alert('You win!');
-                document.location.reload();
-                return;
-            }
             gameOver();
             return;
         }
+    }
+
+    if (finalPipeReached && birdX + 92 > canvas.width - lastPipeImg.width) {
+        winGame(); // Check collision with the final pipe
     }
 }
 
@@ -172,13 +182,11 @@ function gameOver() {
     document.location.reload();
 }
 
-function adjustWelcomeScreenSize() {
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    welcomeScreen.style.width = canvas.width + 'px';
-    welcomeScreen.style.height = canvas.height + 'px';
+function winGame() {
+    gameRunning = false;
+    alert('Congratulations! You have won the game!');
+    document.location.reload();
 }
-
-window.addEventListener('resize', adjustWelcomeScreenSize);
 
 function gameLoop() {
     if (!gameRunning) return;
@@ -191,6 +199,7 @@ function gameLoop() {
     drawPipes();
     checkCollisions();
 
+    // Score display in the lower left corner
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 3;
     ctx.strokeText('Score: ' + score, 10, canvas.height - 20);
@@ -201,4 +210,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// Call this function when the page loads to set the welcome screen size
 adjustWelcomeScreenSize();
