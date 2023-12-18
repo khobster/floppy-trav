@@ -210,7 +210,7 @@ function gameLoop() {
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
     // Check for win condition
-    if (score >= 10 && !reachedCastle) {
+    if (score >= 5 && !reachedCastle) {
         reachedCastle = true;
         showWinScreen();
     } else {
