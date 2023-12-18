@@ -130,7 +130,7 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    if (score < 100) {
+    if (score < 4) {
         framesSinceLastPipe++;
         if (framesSinceLastPipe >= pipeInterval) {
             pipes.push(new Pipe(canvas.width));
