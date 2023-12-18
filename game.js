@@ -29,17 +29,17 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false;
-let castleAppeared = false;
+let finalObstacleAppeared = false;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
-const castleImage = new Image();
+const finalObstacleImg = new Image(); // Image for the final obstacle
 
 // Load images and show welcome screen
 let imagesLoaded = 0;
 let totalImages = 3;
-spriteSheet.onload = pipeImg.onload = castleImage.onload = () => {
+spriteSheet.onload = pipeImg.onload = finalObstacleImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
         adjustWelcomeScreenSize();
@@ -49,13 +49,13 @@ spriteSheet.onload = pipeImg.onload = castleImage.onload = () => {
 
 spriteSheet.src = 'travisbird.png';
 pipeImg.src = './purplebeam2.png';
-castleImage.src = 'tayincastle1.png'; // Make sure this is the correct path
+finalObstacleImg.src = 'lastpipe.png'; // Path to the final obstacle image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
-    { x: 0, y: 0 },
-    { x: 92, y: 0 },
-    { x: 184, y: 0 }
+    { x: 0, y: 0 },    // Frame 1: Wing down
+    { x: 92, y: 0 },   // Frame 2: Wing mid
+    { x: 184, y: 0 }   // Frame 3: Wing up
 ];
 let currentFrameIndex = 0;
 let frameCount = 0;
@@ -110,17 +110,22 @@ function updateFrame() {
     }
 }
 
-function Pipe(x) {
+function Pipe(x, type = 'normal') {
     this.x = x;
+    this.type = type;
     this.top = Math.random() * (canvas.height / 2);
     this.bottom = canvas.height - this.top - pipeGap;
-    this.width = pipeImg.width;
+    this.width = type === 'normal' ? pipeImg.width : finalObstacleImg.width;
 }
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
-        ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
-        ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        if (pipe.type === 'final') {
+            ctx.drawImage(finalObstacleImg, pipe.x, 0, finalObstacleImg.width, canvas.height);
+        } else {
+            ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
+            ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        }
     });
 }
 
@@ -131,16 +136,18 @@ function updatePipes() {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
         }
-    } else if (!castleAppeared && framesSinceLastPipe >= (pipeInterval * 3)) {
-        pipes.push(new Pipe(canvas.width, 'castle'));
-        castleAppeared = true;
+    } else if (!finalObstacleAppeared) {
+        setTimeout(() => {
+            pipes.push(new Pipe(canvas.width, 'final'));
+            finalObstacleAppeared = true;
+        }, 3000); // Delay in milliseconds before final obstacle appears
     }
 
     pipes.forEach(function(pipe, index) {
         pipe.x -= pipeSpeed;
         if (pipe.x + pipe.width < 0) {
             pipes.splice(index, 1);
-            if (!castleAppeared && index === 0) { 
+            if (!finalObstacleAppeared && index === 0) {
                 score++;
             }
         }
@@ -150,11 +157,11 @@ function updatePipes() {
 function checkCollisions() {
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
-        let hitTopPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY < pipe.top;
-        let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
+        let hitPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x &&
+                      (birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
 
-        if (hitTopPipe || hitBottomPipe) {
-            if (pipe.type === 'castle') {
+        if (hitPipe) {
+            if (pipe.type === 'final') {
                 gameRunning = false;
                 alert('You win!');
                 document.location.reload();
