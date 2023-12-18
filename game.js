@@ -29,6 +29,7 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false; // Game starts when welcome screen is interacted with
+let reachedCastle = false; // New variable for reaching the castle
 
 // Images
 const spriteSheet = new Image();
@@ -129,21 +130,23 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    framesSinceLastPipe++;
-    if (framesSinceLastPipe >= pipeInterval) {
-        pipes.push(new Pipe(canvas.width));
-        framesSinceLastPipe = 0;
-    }
-
-    pipes.forEach(function(pipe, index) {
-        pipe.x -= pipeSpeed;
-        if (pipe.x + pipe.width < 0) {
-            pipes.splice(index, 1);
-            if (index === 0) { // Increment score for the first pipe in the array
-                score++;
-            }
+    if (!reachedCastle) { // Stop generating pipes if reached castle
+        framesSinceLastPipe++;
+        if (framesSinceLastPipe >= pipeInterval) {
+            pipes.push(new Pipe(canvas.width));
+            framesSinceLastPipe = 0;
         }
-    });
+
+        pipes.forEach(function(pipe, index) {
+            pipe.x -= pipeSpeed;
+            if (pipe.x + pipe.width < 0) {
+                pipes.splice(index, 1);
+                if (index === 0 && !reachedCastle) { // Increment score for the first pipe in the array
+                    score++;
+                }
+            }
+        });
+    }
 }
 
 function checkCollisions() {
@@ -153,7 +156,11 @@ function checkCollisions() {
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
         if (hitTopPipe || hitBottomPipe) {
-            gameOver();
+            if (reachedCastle) {
+                showWinScreen(); // If collided with the castle, show win screen
+            } else {
+                gameOver();
+            }
             return;
         }
     }
@@ -203,7 +210,8 @@ function gameLoop() {
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
     // Check for win condition
-    if (score >= 10) {
+    if (score >= 10 && !reachedCastle) {
+        reachedCastle = true;
         showWinScreen();
     } else {
         requestAnimationFrame(gameLoop);
