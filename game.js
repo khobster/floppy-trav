@@ -14,7 +14,7 @@ let flapDecay = 0.95; // Flap decay for desktop
 // Adjust settings for mobile
 if (isMobileDevice()) {
     gravity = 1.2; // Adjusted gravity for mobile
-    flapPower = 10; // Adjusted flap power for mobile
+    flapPower = 9; // Adjusted flap power for mobile
     flapDecay = 0.9; // Adjusted flap decay for mobile
 }
 
@@ -29,7 +29,7 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false;
-let finalPipeShown = false;
+let finalPipeAppeared = false;
 
 // Images
 const spriteSheet = new Image();
@@ -120,10 +120,11 @@ function Pipe(x, isFinal = false) {
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
-        const image = pipe.isFinal ? finalPipeImg : pipeImg;
-        ctx.drawImage(image, pipe.x, 0, pipe.width, pipe.top);
-        if (!pipe.isFinal) {
-            ctx.drawImage(image, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        if (pipe.isFinal) {
+            ctx.drawImage(finalPipeImg, pipe.x, 0, finalPipeImg.width, canvas.height);
+        } else {
+            ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
+            ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
         }
     });
 }
@@ -135,16 +136,18 @@ function updatePipes() {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
         }
-    } else if (!finalPipeShown) {
-        finalPipeShown = true;
-        pipes.push(new Pipe(canvas.width, true)); // Add the final pipe
+    } else if (!finalPipeAppeared) {
+        finalPipeAppeared = true;
+        setTimeout(() => {
+            pipes.push(new Pipe(canvas.width, true)); // Add the final pipe after a delay
+        }, 3000); // Delay equivalent to three pipes time
     }
 
     pipes.forEach(function(pipe, index) {
         pipe.x -= pipeSpeed;
         if (pipe.x + pipe.width < 0) {
             pipes.splice(index, 1);
-            if (!finalPipeShown && index === 0) {
+            if (!finalPipeAppeared && index === 0) {
                 score++;
             }
         }
@@ -155,7 +158,7 @@ function checkCollisions() {
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
         let hitPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x &&
-                      (pipe.isFinal || birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
+                      (birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
 
         if (hitPipe) {
             if (pipe.isFinal) {
