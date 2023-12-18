@@ -8,7 +8,7 @@ function isMobileDevice() {
 
 // Game settings
 let gravity = 1.5; // Gravity for desktop
-let flapPower = 9; // Flap power for desktop
+let flapPower = 10; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
@@ -29,7 +29,7 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false; // Game starts when welcome screen is interacted with
-let reachedCastle = false; // New variable for reaching the castle
+let endSequenceStarted = false;
 
 // Images
 const spriteSheet = new Image();
@@ -130,7 +130,7 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    if (!reachedCastle) { // Stop generating pipes if reached castle
+    if (!endSequenceStarted) {
         framesSinceLastPipe++;
         if (framesSinceLastPipe >= pipeInterval) {
             pipes.push(new Pipe(canvas.width));
@@ -141,7 +141,7 @@ function updatePipes() {
             pipe.x -= pipeSpeed;
             if (pipe.x + pipe.width < 0) {
                 pipes.splice(index, 1);
-                if (index === 0 && !reachedCastle) { // Increment score for the first pipe in the array
+                if (index === 0) { // Increment score for the first pipe in the array
                     score++;
                 }
             }
@@ -156,20 +156,20 @@ function checkCollisions() {
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
         if (hitTopPipe || hitBottomPipe) {
-            if (reachedCastle) {
-                showWinScreen(); // If collided with the castle, show win screen
-            } else {
-                gameOver();
-            }
+            gameOver();
             return;
         }
     }
 }
 
 function gameOver() {
-    gameRunning = false;
-    alert('Game Over! Your score is: ' + score);
-    document.location.reload();
+    if (endSequenceStarted) {
+        showHeartScreen();
+    } else {
+        gameRunning = false;
+        alert('Game Over! Your score is: ' + score);
+        document.location.reload();
+    }
 }
 
 // Adjust the welcome screen size to match the canvas
@@ -183,11 +183,9 @@ function adjustWelcomeScreenSize() {
 window.addEventListener('resize', adjustWelcomeScreenSize);
 
 // Function to show the win screen with the heart image
-function showWinScreen() {
+function showHeartScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    ctx.drawImage(taylorImage, 0, 0, canvas.width, canvas.height); // Draw the Taylor image
     ctx.drawImage(heartImage, (canvas.width - heartImage.width) / 2, (canvas.height - heartImage.height) / 2); // Center the heart image
-    alert('You win!');
 }
 
 function gameLoop() {
@@ -210,9 +208,9 @@ function gameLoop() {
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
     // Check for win condition
-    if (score >= 5 && !reachedCastle) {
-        reachedCastle = true;
-        showWinScreen();
+    if (score >= 5 && !endSequenceStarted) {
+        endSequenceStarted = true;
+        setTimeout(showCastle, 3000); // Wait for 3 seconds before showing the castle
     } else {
         requestAnimationFrame(gameLoop);
     }
@@ -220,3 +218,11 @@ function gameLoop() {
 
 // Call this function when the page loads to set the welcome screen size
 adjustWelcomeScreenSize();
+
+function showCastle() {
+    // Clear the game interval and prepare to show the castle
+    gameRunning = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+    ctx.drawImage(taylorImage, (canvas.width - taylorImage.width) / 2, (canvas.height - taylorImage.height) / 2); // Draw the castle image centered
+    setTimeout(() => { gameRunning = true; gameLoop(); }, 2000); // Resume game loop after 2 seconds
+}
