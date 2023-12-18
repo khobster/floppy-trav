@@ -29,20 +29,17 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false;
-let endGameDelay = 60;
-let endGameCounter = 0;
-let endSequenceStarted = false;
+let castleAppeared = false;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
-const heartImage = new Image();
-const taylorImage = new Image();
+const castleImage = new Image();
 
 // Load images and show welcome screen
 let imagesLoaded = 0;
-let totalImages = 4;
-spriteSheet.onload = pipeImg.onload = heartImage.onload = taylorImage.onload = () => {
+let totalImages = 3;
+spriteSheet.onload = pipeImg.onload = castleImage.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
         adjustWelcomeScreenSize();
@@ -52,8 +49,7 @@ spriteSheet.onload = pipeImg.onload = heartImage.onload = taylorImage.onload = (
 
 spriteSheet.src = 'travisbird.png';
 pipeImg.src = './purplebeam2.png';
-heartImage.src = 'heart.png';
-taylorImage.src = 'tayincastle1.png';
+castleImage.src = 'tayincastle1.png'; // Make sure this is the correct path
 
 // Sprite animation frames coordinates
 const spriteFrames = [
@@ -135,21 +131,20 @@ function updatePipes() {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
         }
+    } else if (!castleAppeared && framesSinceLastPipe >= (pipeInterval * 3)) {
+        pipes.push(new Pipe(canvas.width, 'castle'));
+        castleAppeared = true;
     }
 
     pipes.forEach(function(pipe, index) {
         pipe.x -= pipeSpeed;
         if (pipe.x + pipe.width < 0) {
             pipes.splice(index, 1);
-            if (!endSequenceStarted && index === 0) {
+            if (!castleAppeared && index === 0) { 
                 score++;
             }
         }
     });
-
-    if (score >= 5 && !endSequenceStarted) {
-        endSequenceStarted = true;
-    }
 }
 
 function checkCollisions() {
@@ -159,13 +154,15 @@ function checkCollisions() {
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
         if (hitTopPipe || hitBottomPipe) {
+            if (pipe.type === 'castle') {
+                gameRunning = false;
+                alert('You win!');
+                document.location.reload();
+                return;
+            }
             gameOver();
             return;
         }
-    }
-
-    if (endSequenceStarted && endGameCounter > endGameDelay) {
-        showHeartScreen();
     }
 }
 
@@ -183,11 +180,6 @@ function adjustWelcomeScreenSize() {
 
 window.addEventListener('resize', adjustWelcomeScreenSize);
 
-function showHeartScreen() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(heartImage, (canvas.width - heartImage.width) / 2, (canvas.height - heartImage.height) / 2);
-}
-
 function gameLoop() {
     if (!gameRunning) return;
 
@@ -195,17 +187,8 @@ function gameLoop() {
     updateBirdPosition();
     updateFrame();
     drawBird();
-
-    if (endSequenceStarted) {
-        endGameCounter++;
-        if (endGameCounter === endGameDelay) {
-            ctx.drawImage(taylorImage, birdX + 100, 0, taylorImage.width, taylorImage.height);
-        }
-    } else {
-        updatePipes();
-        drawPipes();
-    }
-
+    updatePipes();
+    drawPipes();
     checkCollisions();
 
     ctx.strokeStyle = 'black';
