@@ -49,7 +49,7 @@ spriteSheet.onload = pipeImg.onload = finalPipeImg.onload = () => {
 
 spriteSheet.src = 'travisbird.png';
 pipeImg.src = 'purplebeam2.png'; // Path to the beam image
-finalPipeImg.src = 'lastpipe3.png'; // Path to the final goal image
+finalPipeImg.src = 'lastpipe4.png'; // Path to the final goal image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
