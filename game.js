@@ -7,13 +7,13 @@ function isMobileDevice() {
 }
 
 // Game settings
-let gravity = 1.5; // Gravity for desktop
+let gravity = 1.7; // Gravity for desktop
 let flapPower = 9; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
 if (isMobileDevice()) {
-    gravity = 1.2; // Adjusted gravity for mobile
+    gravity = 1.3; // Adjusted gravity for mobile
     flapPower = 9; // Adjusted flap power for mobile
     flapDecay = 0.9; // Adjusted flap decay for mobile
 }
@@ -49,7 +49,7 @@ spriteSheet.onload = pipeImg.onload = finalPipeImg.onload = () => {
 
 spriteSheet.src = 'travisbird.png';
 pipeImg.src = 'purplebeam2.png'; // Path to the beam image
-finalPipeImg.src = 'lastpipe2.png'; // Path to the final goal image
+finalPipeImg.src = 'lastpipe3.png'; // Path to the final goal image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
