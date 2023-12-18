@@ -114,7 +114,7 @@ function Pipe(x, type = 'normal') {
     this.x = x;
     this.top = Math.random() * (canvas.height / 2);
     this.bottom = canvas.height - this.top - pipeGap;
-    this.width = pipeImg.width;
+    this.width = type === 'final' ? finalObstacleImg.width : pipeImg.width;
     this.type = type;
 }
 
