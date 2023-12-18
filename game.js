@@ -29,19 +29,17 @@ let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
 let gameRunning = false;
-let finalGoalTimer = 0;
-const finalGoalDelay = 180; // Frames to wait before showing the final goal
-let finalGoalShown = false;
+let finalPipeShown = false;
 
 // Images
 const spriteSheet = new Image();
 const pipeImg = new Image();
-const finalObstacleImg = new Image();
+const finalPipeImg = new Image();
 
 // Load images and show welcome screen
 let imagesLoaded = 0;
 let totalImages = 3;
-spriteSheet.onload = pipeImg.onload = finalObstacleImg.onload = () => {
+spriteSheet.onload = pipeImg.onload = finalPipeImg.onload = () => {
     imagesLoaded++;
     if (imagesLoaded === totalImages) {
         adjustWelcomeScreenSize();
@@ -50,8 +48,8 @@ spriteSheet.onload = pipeImg.onload = finalObstacleImg.onload = () => {
 };
 
 spriteSheet.src = 'travisbird.png';
-pipeImg.src = './pipe.png';
-finalObstacleImg.src = 'lastpipe.png'; // Path to the final goal image
+pipeImg.src = 'beam.gif'; // Path to the beam image
+finalPipeImg.src = 'lastpipe.png'; // Path to the final goal image
 
 // Sprite animation frames coordinates
 const spriteFrames = [
@@ -112,23 +110,22 @@ function updateFrame() {
     }
 }
 
-function Pipe(x) {
+function Pipe(x, isFinal = false) {
     this.x = x;
-    this.top = Math.random() * (canvas.height / 2);
-    this.bottom = canvas.height - this.top - pipeGap;
+    this.top = isFinal ? 0 : Math.random() * (canvas.height / 2);
+    this.bottom = isFinal ? canvas.height : canvas.height - this.top - pipeGap;
     this.width = pipeImg.width;
+    this.isFinal = isFinal;
 }
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
-        ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
-        ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        const image = pipe.isFinal ? finalPipeImg : pipeImg;
+        ctx.drawImage(image, pipe.x, 0, pipe.width, pipe.top);
+        if (!pipe.isFinal) {
+            ctx.drawImage(image, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+        }
     });
-
-    // Draw the final goal if it's time
-    if (finalGoalShown) {
-        ctx.drawImage(finalObstacleImg, canvas.width - finalObstacleImg.width, 0, finalObstacleImg.width, canvas.height);
-    }
 }
 
 function updatePipes() {
@@ -138,18 +135,16 @@ function updatePipes() {
             pipes.push(new Pipe(canvas.width));
             framesSinceLastPipe = 0;
         }
-    } else if (!finalGoalShown) {
-        finalGoalTimer++;
-        if (finalGoalTimer >= finalGoalDelay) {
-            finalGoalShown = true;
-        }
+    } else if (!finalPipeShown) {
+        finalPipeShown = true;
+        pipes.push(new Pipe(canvas.width, true)); // Add the final pipe
     }
 
     pipes.forEach(function(pipe, index) {
         pipe.x -= pipeSpeed;
         if (pipe.x + pipe.width < 0) {
             pipes.splice(index, 1);
-            if (!finalGoalShown && index === 0) {
+            if (!finalPipeShown && index === 0) {
                 score++;
             }
         }
@@ -160,10 +155,10 @@ function checkCollisions() {
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
         let hitPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x &&
-                      (birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
+                      (pipe.isFinal || birdY < pipe.top || birdY + 64 > canvas.height - pipe.bottom);
 
         if (hitPipe) {
-            if (finalGoalShown && pipe === pipes[pipes.length - 1]) {
+            if (pipe.isFinal) {
                 gameRunning = false;
                 alert('You win!');
                 document.location.reload();
