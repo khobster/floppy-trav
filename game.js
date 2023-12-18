@@ -130,22 +130,26 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    if (!endSequenceStarted) {
-        framesSinceLastPipe++;
-        if (framesSinceLastPipe >= pipeInterval) {
-            pipes.push(new Pipe(canvas.width));
-            framesSinceLastPipe = 0;
-        }
+    framesSinceLastPipe++;
+    if (score < 5 && framesSinceLastPipe >= pipeInterval) {
+        pipes.push(new Pipe(canvas.width));
+        framesSinceLastPipe = 0;
+    }
 
-        pipes.forEach(function(pipe, index) {
-            pipe.x -= pipeSpeed;
-            if (pipe.x + pipe.width < 0) {
-                pipes.splice(index, 1);
-                if (index === 0) { // Increment score for the first pipe in the array
-                    score++;
-                }
+    pipes.forEach(function(pipe, index) {
+        pipe.x -= pipeSpeed;
+        if (pipe.x + pipe.width < 0) {
+            pipes.splice(index, 1);
+            if (index === 0 && score < 5) { // Increment score for the first pipe in the array
+                score++;
             }
-        });
+        }
+    });
+
+    // Show the castle when score reaches 5 and no pipe is displayed
+    if (score >= 5 && pipes.length === 0 && !endSequenceStarted) {
+        endSequenceStarted = true;
+        pipes.push(new Pipe(birdX - 100)); // Push the castle to be in front of the bird
     }
 }
 
@@ -155,17 +159,23 @@ function checkCollisions() {
         let hitTopPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY < pipe.top;
         let hitBottomPipe = birdX < pipe.x + pipe.width && birdX + 92 > pipe.x && birdY + 64 > canvas.height - pipe.bottom;
 
-        if (hitTopPipe || hitBottomPipe) {
+        if ((hitTopPipe || hitBottomPipe) && !endSequenceStarted) {
             gameOver();
             return;
+        }
+    }
+
+    // Check collision with the castle
+    if (endSequenceStarted) {
+        let castleCollision = birdX + 92 > pipes[0].x && birdY < canvas.height - pipes[0].bottom;
+        if (castleCollision) {
+            showHeartScreen();
         }
     }
 }
 
 function gameOver() {
-    if (endSequenceStarted) {
-        showHeartScreen();
-    } else {
+    if (!endSequenceStarted) {
         gameRunning = false;
         alert('Game Over! Your score is: ' + score);
         document.location.reload();
@@ -207,22 +217,8 @@ function gameLoop() {
     ctx.font = '20px Arial';
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
-    // Check for win condition
-    if (score >= 5 && !endSequenceStarted) {
-        endSequenceStarted = true;
-        setTimeout(showCastle, 3000); // Wait for 3 seconds before showing the castle
-    } else {
-        requestAnimationFrame(gameLoop);
-    }
+    requestAnimationFrame(gameLoop);
 }
 
 // Call this function when the page loads to set the welcome screen size
 adjustWelcomeScreenSize();
-
-function showCastle() {
-    // Clear the game interval and prepare to show the castle
-    gameRunning = false;
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    ctx.drawImage(taylorImage, (canvas.width - taylorImage.width) / 2, (canvas.height - taylorImage.height) / 2); // Draw the castle image centered
-    setTimeout(() => { gameRunning = true; gameLoop(); }, 2000); // Resume game loop after 2 seconds
-}
