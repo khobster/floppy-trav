@@ -114,14 +114,14 @@ function Pipe(x, isFinal = false) {
     this.x = x;
     this.top = isFinal ? 0 : Math.random() * (canvas.height / 2);
     this.bottom = isFinal ? canvas.height : canvas.height - this.top - pipeGap;
-    this.width = pipeImg.width;
+    this.width = isFinal ? finalPipeImg.width * 0.8 : pipeImg.width;
     this.isFinal = isFinal;
 }
 
 function drawPipes() {
     pipes.forEach(function(pipe) {
         if (pipe.isFinal) {
-            ctx.drawImage(finalPipeImg, pipe.x, 0, finalPipeImg.width, canvas.height);
+            ctx.drawImage(finalPipeImg, pipe.x, 0, pipe.width, canvas.height);
         } else {
             ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
             ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
