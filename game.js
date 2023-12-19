@@ -13,8 +13,8 @@ let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
 if (isMobileDevice()) {
-    gravity = 1.3; // Adjusted gravity for mobile
-    flapPower = 9; // Adjusted flap power for mobile
+    gravity = 1.4; // Adjusted gravity for mobile
+    flapPower = 7; // Adjusted flap power for mobile
     flapDecay = 0.9; // Adjusted flap decay for mobile
 }
 
