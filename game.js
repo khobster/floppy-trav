@@ -7,8 +7,8 @@ function isMobileDevice() {
 }
 
 // Game settings
-let gravity = 1.7; // Gravity for desktop
-let flapPower = 9; // Flap power for desktop
+let gravity = 1.8; // Gravity for desktop
+let flapPower = 7; // Flap power for desktop
 let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
