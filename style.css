@@ -74,7 +74,7 @@ canvas {
 
 #playAgainBtn {
     padding: 15px 30px; /* Increased padding for a larger button */
-    font-size: 24px; /* Larger font size */
+    font-size: 21px; /* Larger font size */
     font-weight: bold;
     background-color: red; /* Red background color */
     color: white; /* White text for better visibility */
