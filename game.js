@@ -206,7 +206,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-unction showEndGameModal(message, primaryButtonText, secondaryButtonText) {
+function showEndGameModal(message, primaryButtonText, secondaryButtonText) {
     const modal = document.getElementById('gameOverModal');
     const gameOverText = document.getElementById('gameOverText');
     const finalScore = document.getElementById('finalScore');
