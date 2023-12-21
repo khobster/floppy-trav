@@ -206,10 +206,38 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// Custom modal dialog for end game
 function showEndGameModal(message, primaryButtonText, secondaryButtonText) {
-    // Create and display a custom modal dialog with buttons
-    // Implement the logic for handling button clicks
+    // Update the text in the modal
+    document.getElementById('gameOverText').innerText = message;
+    document.getElementById('finalScore').innerText = score;
+
+    // Update button texts
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    playAgainBtn.innerText = primaryButtonText;
+
+    const contactBtn = document.getElementById('contactBtn');
+    contactBtn.innerText = secondaryButtonText;
+
+    // Show the modal
+    const gameOverModal = document.getElementById('gameOverModal');
+    gameOverModal.style.display = 'block';
+
+    // Add event listeners for buttons
+    playAgainBtn.onclick = function() {
+        gameOverModal.style.display = 'none';
+        document.location.reload(); // Reload the page to restart the game
+    };
+
+    contactBtn.onclick = function() {
+        gameOverModal.style.display = 'none';
+        window.location.href = 'https://yourwebsite.com/contact'; // Replace with your contact page URL
+    };
+
+    // Add event listener to close the modal when the 'x' is clicked
+    const closeButton = gameOverModal.querySelector('.close');
+    closeButton.onclick = function() {
+        gameOverModal.style.display = 'none';
+    };
 }
 
 adjustWelcomeScreenSize();
