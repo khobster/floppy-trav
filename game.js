@@ -163,7 +163,7 @@ function checkCollisions() {
         if (hitPipe) {
             if (pipe.isFinal) {
                 gameRunning = false;
-                showEndGameModal('You win!', 'Play Again', 'Say What\'s Up to Me');
+                showEndGameModal('You win!', 'Play Again', 'Say 👋');
                 return;
             }
             gameOver();
@@ -174,7 +174,7 @@ function checkCollisions() {
 
 function gameOver() {
     gameRunning = false;
-    showEndGameModal('Game Over! Your score is: ' + score, 'Play Again', 'Say What\'s Up to Me');
+    showEndGameModal('Game Over! Your score is: ' + score, 'Play Again', 'Say 👋');
 }
 
 function adjustWelcomeScreenSize() {
