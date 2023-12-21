@@ -73,8 +73,12 @@ canvas {
 }
 
 #playAgainBtn {
-    background-color: #4CAF50;
-    color: white;
+    padding: 15px 30px; /* Increased padding for a larger button */
+    font-size: 24px; /* Larger font size */
+    background-color: red; /* Red background color */
+    color: white; /* White text for better visibility */
+    border: none;
+    cursor: pointer;
 }
 
 .contact-btn {
