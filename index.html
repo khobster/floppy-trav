@@ -1,33 +1,26 @@
 <!DOCTYPE html>
-
-<html
- 
-lang="en">
-
+<html lang="en">
 <head>
-
- <meta property="og:image" content="trav2tayopengraph.png">
-
-    
-<meta
- 
-charset="UTF-8">
-
-    
-<meta
- 
-name="viewport"
- 
-content="width=device-width, initial-scale=1.0">
-
-    
-<title>reunite the lovebirds!</title>
-    <link rel="stylesheet" href="style.css"> </head>
+    <meta property="og:image" content="trav2tayopengraph.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reunite the Lovebirds!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
- 
- <img id="welcomeScreen" src="trav2taymenu2.gif" style="display: none; position: absolute; width: 100%; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%);" alt="Welcome Screen">
-
+    <img id="welcomeScreen" src="trav2taymenu2.gif" style="display: none; position: absolute; width: 100%; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%);" alt="Welcome Screen">
     <canvas id="gameCanvas" width="400" height="600"></canvas>
 
-    <script src="game.js"></script> </body>
+    <!-- Custom Modal for Game Over / Win -->
+    <div id="gameOverModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="gameOverText">Game Over! Your score is: <span id="finalScore"></span></p>
+            <button id="playAgainBtn">Play Again</button>
+            <button id="contactBtn" class="contact-btn">Say What's Up to Me</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
 </html>
