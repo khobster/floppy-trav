@@ -206,37 +206,33 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-function showEndGameModal(message, primaryButtonText, secondaryButtonText) {
-    // Update the text in the modal
-    document.getElementById('gameOverText').innerText = message;
-    document.getElementById('finalScore').innerText = score;
-
-    // Update button texts
+unction showEndGameModal(message, primaryButtonText, secondaryButtonText) {
+    const modal = document.getElementById('gameOverModal');
+    const gameOverText = document.getElementById('gameOverText');
+    const finalScore = document.getElementById('finalScore');
     const playAgainBtn = document.getElementById('playAgainBtn');
-    playAgainBtn.innerText = primaryButtonText;
-
     const contactBtn = document.getElementById('contactBtn');
+    const closeButton = modal.querySelector('.close');
+
+    gameOverText.innerText = message;
+    finalScore.innerText = score;
+    playAgainBtn.innerText = primaryButtonText;
     contactBtn.innerText = secondaryButtonText;
 
-    // Show the modal
-    const gameOverModal = document.getElementById('gameOverModal');
-    gameOverModal.style.display = 'block';
+    modal.style.display = 'block';
 
-    // Add event listeners for buttons
     playAgainBtn.onclick = function() {
-        gameOverModal.style.display = 'none';
-        document.location.reload(); // Reload the page to restart the game
+        modal.style.display = 'none';
+        document.location.reload();
     };
 
     contactBtn.onclick = function() {
-        gameOverModal.style.display = 'none';
-        window.location.href = 'https://yourwebsite.com/contact'; // Replace with your contact page URL
+        modal.style.display = 'none';
+        window.location.href = 'https://yourwebsite.com/contact';
     };
 
-    // Add event listener to close the modal when the 'x' is clicked
-    const closeButton = gameOverModal.querySelector('.close');
     closeButton.onclick = function() {
-        gameOverModal.style.display = 'none';
+        modal.style.display = 'none';
     };
 }
 
