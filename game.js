@@ -121,7 +121,7 @@ function Pipe(x, isFinal = false) {
 function drawPipes() {
     pipes.forEach(function(pipe) {
         if (pipe.isFinal) {
-            ctx.drawImage(finalPipeImg, pipe.x, 0, pipe.width, canvas.height);
+            ctx.drawImage(finalPipeImg, pipe.x, 0, finalPipeImg.width, canvas.height);
         } else {
             ctx.drawImage(pipeImg, pipe.x, 0, pipe.width, pipe.top);
             ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
@@ -163,8 +163,7 @@ function checkCollisions() {
         if (hitPipe) {
             if (pipe.isFinal) {
                 gameRunning = false;
-                alert('You win!');
-                document.location.reload();
+                showEndGameModal('You win!', 'Play Again', 'Say What\'s Up to Me');
                 return;
             }
             gameOver();
@@ -175,8 +174,7 @@ function checkCollisions() {
 
 function gameOver() {
     gameRunning = false;
-    alert('Game Over! Your score is: ' + score);
-    document.location.reload();
+    showEndGameModal('Game Over! Your score is: ' + score, 'Play Again', 'Say What\'s Up to Me');
 }
 
 function adjustWelcomeScreenSize() {
@@ -206,6 +204,12 @@ function gameLoop() {
     ctx.fillText('Score: ' + score, 10, canvas.height - 20);
 
     requestAnimationFrame(gameLoop);
+}
+
+// Custom modal dialog for end game
+function showEndGameModal(message, primaryButtonText, secondaryButtonText) {
+    // Create and display a custom modal dialog with buttons
+    // Implement the logic for handling button clicks
 }
 
 adjustWelcomeScreenSize();
