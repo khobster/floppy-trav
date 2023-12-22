@@ -43,6 +43,7 @@ canvas {
 
 .modal-content {
     background-color: #000000; /* Black background */
+    color: #FFFFFF; /* White text */
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #FFFFFF; /* White border */
