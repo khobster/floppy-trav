@@ -21,8 +21,8 @@ canvas {
 #welcomeScreen {
     background: url('trav2taynewwelcomescreen.gif') no-repeat center center;
     background-size: contain;
-    width: 100%;   /* Adjust to match the width of the canvas */
-    height: 60%;  /* Adjust to match the height of the canvas */
+    width: 100%; /* Adjust to match the width of the canvas */
+    height: 60%; /* Adjust to match the height of the canvas */
     position: absolute;
     top: 0;
     left: 0;
@@ -42,16 +42,16 @@ canvas {
 }
 
 .modal-content {
-    background-color: #fefefe;
+    background-color: #000000; /* Black background */
     margin: 15% auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid #FFFFFF; /* White border */
     width: 80%;
     text-align: center;
 }
 
 .close {
-    color: #aaa;
+    color: #FFFFFF; /* White text */
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -59,7 +59,7 @@ canvas {
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: #CCCCCC; /* Lighter color for visibility on hover/focus */
     text-decoration: none;
     cursor: pointer;
 }
@@ -70,19 +70,16 @@ canvas {
     margin: 10px;
     border: none;
     cursor: pointer;
+    color: #FFFFFF; /* White text */
+    font-weight: bold; /* Bold text */
 }
 
 #playAgainBtn {
+    background-color: red; /* Red background color */
     padding: 15px 30px; /* Increased padding for a larger button */
     font-size: 21px; /* Larger font size */
-    font-weight: bold;
-    background-color: red; /* Red background color */
-    color: white; /* White text for better visibility */
-    border: none;
-    cursor: pointer;
 }
 
 .contact-btn {
     background-color: #008CBA;
-    color: white;
 }
