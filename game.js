@@ -24,7 +24,7 @@ let birdY = 100;
 let flapVelocity = 0;
 let score = 0;
 let pipeGap = 300;
-let pipeSpeed = 3;
+let pipeSpeed = 4;
 let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
@@ -130,7 +130,7 @@ function drawPipes() {
 }
 
 function updatePipes() {
-    if (score < 100) {
+    if (score < 5) {
         framesSinceLastPipe++;
         if (framesSinceLastPipe >= pipeInterval) {
             pipes.push(new Pipe(canvas.width));
