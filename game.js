@@ -13,7 +13,7 @@ let flapDecay = 0.95; // Flap decay for desktop
 
 // Adjust settings for mobile
 if (isMobileDevice()) {
-    gravity = 1.4; // Adjusted gravity for mobile
+    gravity = 1.5; // Adjusted gravity for mobile
     flapPower = 7; // Adjusted flap power for mobile
     flapDecay = 0.9; // Adjusted flap decay for mobile
 }
@@ -24,7 +24,7 @@ let birdY = 100;
 let flapVelocity = 0;
 let score = 0;
 let pipeGap = 280;
-let pipeSpeed = 3.5;
+let pipeSpeed = 3.2;
 let pipes = [];
 let framesSinceLastPipe = 0;
 let pipeInterval = 100;
